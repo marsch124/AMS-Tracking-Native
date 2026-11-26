@@ -1,0 +1,674 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		031E212A324CCD7775299310 /* DaySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53AB69CD418156AF04584454 /* DaySheets.swift */; };
+		06B27DB10F0B55C0EA47FC65 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1258C7B53B61ECA514B0581 /* Theme.swift */; };
+		0D22D87AAE59AE820F7429F1 /* LastMonthScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5372CA32ED67F09915FF1E /* LastMonthScreen.swift */; };
+		1431A74223965B465F56C9DF /* StatsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF917AE8E3B2BD23CBED3982 /* StatsScreen.swift */; };
+		204AAB57A9926D26BC10595E /* HabitDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25689A1FE5A9A454B6314E72 /* HabitDetailScreen.swift */; };
+		2B6D08F2659013AB28C467A4 /* Dates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F57AB20A9E5338D78E6782 /* Dates.swift */; };
+		4EE18593DAAD2B93646316DB /* AMSIcons in Frameworks */ = {isa = PBXBuildFile; productRef = 5DCD027DAFA859D6B76CF512 /* AMSIcons */; };
+		50B6BB92A425752767F8A1D6 /* TodayScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F894ACBE586DE4C91E7F018D /* TodayScreen.swift */; };
+		5C80CF99B5F750099A938CB4 /* AspirationsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB30A0295490BED8D8AC8172 /* AspirationsScreen.swift */; };
+		6A32FEC4BE7F3BDB7C369F57 /* TrackIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E87D3807653060C885BB0C6 /* TrackIcons.swift */; };
+		6DD07383EA42F58BB422230D /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 614F00DC76B499C05B4CB20C /* Model.swift */; };
+		8A2E292F40B23DB021E6783D /* HabitFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F641DCED17A233729F24C6D7 /* HabitFormSheet.swift */; };
+		9016DC336ED16F57BA61219A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7047B7C8230082ECADE4036 /* RootView.swift */; };
+		A2A1FF1CC895FBC7813AC82A /* AMSTrackingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B85B17EE9E84C6F912DE3456 /* AMSTrackingApp.swift */; };
+		B3C2892CC37BCE8864BD80F7 /* LastWeekScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7F109D8711342482B9C78A8 /* LastWeekScreen.swift */; };
+		C7BAFCDBD5751D57A891075F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A992BEA9144D6A91C723335 /* Assets.xcassets */; };
+		CA1A1A3FE82D5DBCF229BEB8 /* Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B8D899184BD55358BAF5F8C /* Actions.swift */; };
+		E0D2D43C55D3D221B8DCBC15 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED34288A9F26F30676A5E537 /* SampleData.swift */; };
+		E2D6FEDED176671EB44865D0 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B006BBBF4D4CC0FE6A41231 /* Components.swift */; };
+		E609DAD78B5649FF82F40EF4 /* Logic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23014FD98E25488E81E88D21 /* Logic.swift */; };
+		E92B2CEA14648AC40111A025 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B883F280ED928E2D7E549B51 /* SettingsScreen.swift */; };
+		FB1D3A592D41752A69D2292B /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB905241CC4D953A3FC5F3DA /* Store.swift */; };
+		FCFC2994203914450A562F9E /* Fasting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837AB4B04C2638AB5BE1F37D /* Fasting.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A256E7D01CA14932FC429956 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13AB6101EE44260B04F250F3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 89206E31571D2C16D7119E90;
+			remoteInfo = AMSTracking;
+		};
+		D58EC668F5EFA24F2157E7B5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 13AB6101EE44260B04F250F3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 89206E31571D2C16D7119E90;
+			remoteInfo = AMSTracking;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1B006BBBF4D4CC0FE6A41231 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		1C5372CA32ED67F09915FF1E /* LastMonthScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastMonthScreen.swift; sourceTree = "<group>"; };
+		23014FD98E25488E81E88D21 /* Logic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logic.swift; sourceTree = "<group>"; };
+		25689A1FE5A9A454B6314E72 /* HabitDetailScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitDetailScreen.swift; sourceTree = "<group>"; };
+		3E3E009C71DABAE45A175E4C /* AMSTrackingTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AMSTrackingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		53AB69CD418156AF04584454 /* DaySheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaySheets.swift; sourceTree = "<group>"; };
+		55F57AB20A9E5338D78E6782 /* Dates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dates.swift; sourceTree = "<group>"; };
+		5E87D3807653060C885BB0C6 /* TrackIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackIcons.swift; sourceTree = "<group>"; };
+		614F00DC76B499C05B4CB20C /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		6A992BEA9144D6A91C723335 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		837AB4B04C2638AB5BE1F37D /* Fasting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fasting.swift; sourceTree = "<group>"; };
+		9B8D899184BD55358BAF5F8C /* Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actions.swift; sourceTree = "<group>"; };
+		A0F2ADE8A01ACE4522AD1127 /* AMSTrackingUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AMSTrackingUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1258C7B53B61ECA514B0581 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		AB905241CC4D953A3FC5F3DA /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		B7F109D8711342482B9C78A8 /* LastWeekScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastWeekScreen.swift; sourceTree = "<group>"; };
+		B85B17EE9E84C6F912DE3456 /* AMSTrackingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMSTrackingApp.swift; sourceTree = "<group>"; };
+		B883F280ED928E2D7E549B51 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		BB30A0295490BED8D8AC8172 /* AspirationsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspirationsScreen.swift; sourceTree = "<group>"; };
+		BC11A3DB1B32D7E9D898356E /* AMSTracking.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AMSTracking.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7047B7C8230082ECADE4036 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		ED34288A9F26F30676A5E537 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		F641DCED17A233729F24C6D7 /* HabitFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HabitFormSheet.swift; sourceTree = "<group>"; };
+		F894ACBE586DE4C91E7F018D /* TodayScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayScreen.swift; sourceTree = "<group>"; };
+		FF917AE8E3B2BD23CBED3982 /* StatsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsScreen.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2158AF067FCEA3EE59589CAA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4EE18593DAAD2B93646316DB /* AMSIcons in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1F454768212E42F71DA1768E /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = UITests;
+			sourceTree = "<group>";
+		};
+		376DF084DEEF105A41C0BB1D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BC11A3DB1B32D7E9D898356E /* AMSTracking.app */,
+				3E3E009C71DABAE45A175E4C /* AMSTrackingTests.xctest */,
+				A0F2ADE8A01ACE4522AD1127 /* AMSTrackingUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6D4FEFE2D98A11A5E28D4E08 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A66C443FE3A7C941D84100C1 /* Resources */,
+				B2E1F1F18B7C1757E5B3F48D /* Sources */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		806EAFB9D7D9AFF37859FEF8 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		8D7FBED9ADE898E29A14F1A4 = {
+			isa = PBXGroup;
+			children = (
+				6D4FEFE2D98A11A5E28D4E08 /* App */,
+				806EAFB9D7D9AFF37859FEF8 /* Tests */,
+				1F454768212E42F71DA1768E /* UITests */,
+				376DF084DEEF105A41C0BB1D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A66C443FE3A7C941D84100C1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6A992BEA9144D6A91C723335 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B2E1F1F18B7C1757E5B3F48D /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				9B8D899184BD55358BAF5F8C /* Actions.swift */,
+				B85B17EE9E84C6F912DE3456 /* AMSTrackingApp.swift */,
+				BB30A0295490BED8D8AC8172 /* AspirationsScreen.swift */,
+				1B006BBBF4D4CC0FE6A41231 /* Components.swift */,
+				55F57AB20A9E5338D78E6782 /* Dates.swift */,
+				53AB69CD418156AF04584454 /* DaySheets.swift */,
+				837AB4B04C2638AB5BE1F37D /* Fasting.swift */,
+				25689A1FE5A9A454B6314E72 /* HabitDetailScreen.swift */,
+				F641DCED17A233729F24C6D7 /* HabitFormSheet.swift */,
+				1C5372CA32ED67F09915FF1E /* LastMonthScreen.swift */,
+				B7F109D8711342482B9C78A8 /* LastWeekScreen.swift */,
+				23014FD98E25488E81E88D21 /* Logic.swift */,
+				614F00DC76B499C05B4CB20C /* Model.swift */,
+				D7047B7C8230082ECADE4036 /* RootView.swift */,
+				ED34288A9F26F30676A5E537 /* SampleData.swift */,
+				B883F280ED928E2D7E549B51 /* SettingsScreen.swift */,
+				FF917AE8E3B2BD23CBED3982 /* StatsScreen.swift */,
+				AB905241CC4D953A3FC5F3DA /* Store.swift */,
+				A1258C7B53B61ECA514B0581 /* Theme.swift */,
+				F894ACBE586DE4C91E7F018D /* TodayScreen.swift */,
+				5E87D3807653060C885BB0C6 /* TrackIcons.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		89206E31571D2C16D7119E90 /* AMSTracking */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 459728F242870160D1A41C90 /* Build configuration list for PBXNativeTarget "AMSTracking" */;
+			buildPhases = (
+				C053E4FD014E688B0FB1F988 /* Sources */,
+				D1FBB4615263B85DA04B11AF /* Resources */,
+				2158AF067FCEA3EE59589CAA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AMSTracking;
+			packageProductDependencies = (
+				5DCD027DAFA859D6B76CF512 /* AMSIcons */,
+			);
+			productName = AMSTracking;
+			productReference = BC11A3DB1B32D7E9D898356E /* AMSTracking.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CDF6B396A7F690E2973CD6F3 /* AMSTrackingUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E71AE284310707C58D33EEE3 /* Build configuration list for PBXNativeTarget "AMSTrackingUITests" */;
+			buildPhases = (
+				35E010A153F7A3F43EC03A0B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				05BCB57B972F744FCEC6639F /* PBXTargetDependency */,
+			);
+			name = AMSTrackingUITests;
+			packageProductDependencies = (
+			);
+			productName = AMSTrackingUITests;
+			productReference = A0F2ADE8A01ACE4522AD1127 /* AMSTrackingUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		E216DF58F9240409D364ECF5 /* AMSTrackingTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 236B95B519B41E5CE5573C92 /* Build configuration list for PBXNativeTarget "AMSTrackingTests" */;
+			buildPhases = (
+				B22DCC818E59928CD9D3F1C4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				43F0E54F12D7D16D0FC30C3C /* PBXTargetDependency */,
+			);
+			name = AMSTrackingTests;
+			packageProductDependencies = (
+			);
+			productName = AMSTrackingTests;
+			productReference = 3E3E009C71DABAE45A175E4C /* AMSTrackingTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		13AB6101EE44260B04F250F3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					89206E31571D2C16D7119E90 = {
+						DevelopmentTeam = D24ENP83QQ;
+						ProvisioningStyle = Automatic;
+					};
+					CDF6B396A7F690E2973CD6F3 = {
+						DevelopmentTeam = D24ENP83QQ;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 89206E31571D2C16D7119E90;
+					};
+					E216DF58F9240409D364ECF5 = {
+						DevelopmentTeam = D24ENP83QQ;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 77ABC02C2ABF48E8210561B7 /* Build configuration list for PBXProject "AMSTracking" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8D7FBED9ADE898E29A14F1A4;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C6650E0B32C4D36D435F0444 /* XCRemoteSwiftPackageReference "AMS-Icons" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 376DF084DEEF105A41C0BB1D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				89206E31571D2C16D7119E90 /* AMSTracking */,
+				E216DF58F9240409D364ECF5 /* AMSTrackingTests */,
+				CDF6B396A7F690E2973CD6F3 /* AMSTrackingUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D1FBB4615263B85DA04B11AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7BAFCDBD5751D57A891075F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		35E010A153F7A3F43EC03A0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B22DCC818E59928CD9D3F1C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C053E4FD014E688B0FB1F988 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2A1FF1CC895FBC7813AC82A /* AMSTrackingApp.swift in Sources */,
+				CA1A1A3FE82D5DBCF229BEB8 /* Actions.swift in Sources */,
+				5C80CF99B5F750099A938CB4 /* AspirationsScreen.swift in Sources */,
+				E2D6FEDED176671EB44865D0 /* Components.swift in Sources */,
+				2B6D08F2659013AB28C467A4 /* Dates.swift in Sources */,
+				031E212A324CCD7775299310 /* DaySheets.swift in Sources */,
+				FCFC2994203914450A562F9E /* Fasting.swift in Sources */,
+				204AAB57A9926D26BC10595E /* HabitDetailScreen.swift in Sources */,
+				8A2E292F40B23DB021E6783D /* HabitFormSheet.swift in Sources */,
+				0D22D87AAE59AE820F7429F1 /* LastMonthScreen.swift in Sources */,
+				B3C2892CC37BCE8864BD80F7 /* LastWeekScreen.swift in Sources */,
+				E609DAD78B5649FF82F40EF4 /* Logic.swift in Sources */,
+				6DD07383EA42F58BB422230D /* Model.swift in Sources */,
+				9016DC336ED16F57BA61219A /* RootView.swift in Sources */,
+				E0D2D43C55D3D221B8DCBC15 /* SampleData.swift in Sources */,
+				E92B2CEA14648AC40111A025 /* SettingsScreen.swift in Sources */,
+				1431A74223965B465F56C9DF /* StatsScreen.swift in Sources */,
+				FB1D3A592D41752A69D2292B /* Store.swift in Sources */,
+				06B27DB10F0B55C0EA47FC65 /* Theme.swift in Sources */,
+				50B6BB92A425752767F8A1D6 /* TodayScreen.swift in Sources */,
+				6A32FEC4BE7F3BDB7C369F57 /* TrackIcons.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		05BCB57B972F744FCEC6639F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 89206E31571D2C16D7119E90 /* AMSTracking */;
+			targetProxy = A256E7D01CA14932FC429956 /* PBXContainerItemProxy */;
+		};
+		43F0E54F12D7D16D0FC30C3C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 89206E31571D2C16D7119E90 /* AMSTracking */;
+			targetProxy = D58EC668F5EFA24F2157E7B5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		454F53A603D9E149A05956CF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"BUNDLE_LOADER[sdk=macosx*]" = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.marsch124.amstracking.tests;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AMSTracking.app/AMSTracking";
+				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/AMSTracking.app/Contents/MacOS/AMSTracking";
+			};
+			name = Debug;
+		};
+		50E869D1CBD1B45738EFDDF8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = D24ENP83QQ;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7906EE20E842D1031494CC72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.marsch124.amstracking.uitests;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AMSTracking;
+			};
+			name = Debug;
+		};
+		9FE022D67B5DE8566987E16D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/Config/AMSTracking.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.marsch124.amstracking;
+				PRODUCT_NAME = AMSTracking;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B676C9201B4A9F5DC85DBE9A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = App/Config/AMSTracking.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.marsch124.amstracking;
+				PRODUCT_NAME = AMSTracking;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B9872AC0A85BDDA2C2ACF19E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = D24ENP83QQ;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 2.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		BCD86C1317C01CFABAA47BAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.marsch124.amstracking.uitests;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = AMSTracking;
+			};
+			name = Release;
+		};
+		DD3AC14CF81F6AF26C722402 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				"BUNDLE_LOADER[sdk=macosx*]" = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.marsch124.amstracking.tests;
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AMSTracking.app/AMSTracking";
+				"TEST_HOST[sdk=macosx*]" = "$(BUILT_PRODUCTS_DIR)/AMSTracking.app/Contents/MacOS/AMSTracking";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		236B95B519B41E5CE5573C92 /* Build configuration list for PBXNativeTarget "AMSTrackingTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454F53A603D9E149A05956CF /* Debug */,
+				DD3AC14CF81F6AF26C722402 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		459728F242870160D1A41C90 /* Build configuration list for PBXNativeTarget "AMSTracking" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9FE022D67B5DE8566987E16D /* Debug */,
+				B676C9201B4A9F5DC85DBE9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		77ABC02C2ABF48E8210561B7 /* Build configuration list for PBXProject "AMSTracking" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				50E869D1CBD1B45738EFDDF8 /* Debug */,
+				B9872AC0A85BDDA2C2ACF19E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E71AE284310707C58D33EEE3 /* Build configuration list for PBXNativeTarget "AMSTrackingUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7906EE20E842D1031494CC72 /* Debug */,
+				BCD86C1317C01CFABAA47BAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C6650E0B32C4D36D435F0444 /* XCRemoteSwiftPackageReference "AMS-Icons" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/marsch124/AMS-Icons";
+			requirement = {
+				kind = revision;
+				revision = 58433eb7ecfa08be37db25165069d14839ef13b4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5DCD027DAFA859D6B76CF512 /* AMSIcons */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C6650E0B32C4D36D435F0444 /* XCRemoteSwiftPackageReference "AMS-Icons" */;
+			productName = AMSIcons;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 13AB6101EE44260B04F250F3 /* Project object */;
+}

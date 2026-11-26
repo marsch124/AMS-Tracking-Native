@@ -1,0 +1,14 @@
+{
+  "originHash" : "0cb5e88e8291bb29d13629dfec95b7a764be7415c533aafe7da687b68e1feab8",
+  "pins" : [
+    {
+      "identity" : "ams-icons",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marsch124/AMS-Icons",
+      "state" : {
+        "revision" : "58433eb7ecfa08be37db25165069d14839ef13b4"
+      }
+    }
+  ],
+  "version" : 3
+}

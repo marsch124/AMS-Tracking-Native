@@ -1,0 +1,91 @@
+name: Tests
+
+# Every push runs the suite. A red run means the build is not fit to install.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    # macos-26: the same OS family the app runs on (macos-15 had Xcode 16.4, which choked on
+    # the recap maths and folds toolbars differently).
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show what we are building with
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices available | grep -E "iPhone" | head
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the project
+        run: xcodegen generate
+
+      # 20 Nov 2026: GitHub's runner got a new Xcode (26.6) with NO iPhone simulator, and the
+      # tests stopped before they began. Keep the Xcode in use if it has an iPhone; otherwise
+      # take the newest Xcode that has one. (Same fix as AMS Manual Expenses 9e6e778.)
+      - name: Use an Xcode that has an iPhone simulator
+        run: |
+          has_iphone() { xcodebuild -showdestinations -project AMSTracking.xcodeproj -scheme AMSTracking 2>/dev/null | grep -q "platform:iOS Simulator, .*name:iPhone"; }
+          if has_iphone; then echo "Keeping $(xcode-select -p)"; xcodebuild -version; exit 0; fi
+          for XC in $(ls -d /Applications/Xcode*.app | sort -V -r); do
+            sudo xcode-select -s "$XC"
+            if has_iphone; then echo "Using $XC"; xcodebuild -version; exit 0; fi
+            echo "No iPhone simulator with $XC"
+          done
+          echo "::error::no Xcode on this runner has an iPhone simulator"
+          exit 1
+
+      - name: Pick a simulator the runner actually has
+        run: |
+          # Naming "iPhone 16" broke when GitHub rotated the runner image, and
+          # taking the last line gave us an iPhone SE. Take the highest
+          # numbered iPhone, so the device is both present and predictable.
+          LINE=$(xcrun simctl list devices available \
+            | grep -E "^ +iPhone [0-9]" | sort -V | tail -1)
+          if [ -z "$LINE" ]; then
+            LINE=$(xcrun simctl list devices available | grep -E "^ +iPhone" | tail -1)
+          fi
+          UDID=$(echo "$LINE" | sed -E 's/.*\(([0-9A-Fa-f-]{36})\).*/\1/')
+          if [ -z "$UDID" ]; then
+            echo "::error::no iPhone simulator on this runner"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "SIM_UDID=$UDID" >> $GITHUB_ENV
+          echo "Using simulator:$(echo "$LINE" | sed -E 's/ *\(.*//')"
+
+      - name: Start the simulator before the tests
+        timeout-minutes: 8
+        run: |
+          # Twice on 2-3 Nov 2026 the run built fine, then sat for 29 minutes
+          # without starting a single test, until the job timed out: the
+          # simulator never came up. Boot it here and wait until it is really
+          # up, so a stuck boot fails in minutes and says so.
+          xcrun simctl boot "$SIM_UDID" || true
+          xcrun simctl bootstatus "$SIM_UDID" -b
+
+      - name: Unit tests and UI tests
+        run: |
+          xcodebuild test \
+            -project AMSTracking.xcodeproj \
+            -scheme AMSTracking \
+            -destination "platform=iOS Simulator,id=$SIM_UDID" \
+            -derivedDataPath build \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM=""
+
+      - name: Keep the results when it goes red
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: TestResults.xcresult
