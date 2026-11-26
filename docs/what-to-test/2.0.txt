@@ -1,0 +1,31 @@
+Tracking 2.0 is now a real app for iPhone, iPad and Mac. It replaces the Tracking 1.51 you had this morning, and iCloud keeps every device in step.
+
+Please try these first:
+
+1. Bring your habits over
+Open the Safari web app, Settings, Export backup (JSON). Then here: Settings, Import backup. If you already imported into 1.51, nothing to do - the habits come over by themselves on the first start. Check that your habits, streaks and fasts look right.
+
+2. Siri and the icon menu
+Say "Hey Siri, start fasting in Tracking", then "stop fasting in Tracking". The fast changes at once, Siri answers out loud, and the app does not need to open. Then press and hold the Tracking icon on the Home Screen: Start Fasting (moon) or Stop Fasting (fork and knife, "Since 20:13") also changes the fast straight away. Also try it in Shortcuts.
+
+3. iPad and Mac side by side
+On iPad and Mac you see a sidebar (Today, Stats, Last week, Last month, Aspirations, Settings), the chosen part in the middle and the tapped habit's page on the right. On the Mac try right-click on a card (Done today, Skip today, Yesterday done, Start/Stop fast, Edit) and Command-N for a new habit.
+
+4. iCloud between devices
+Tick a habit on one device and watch it arrive on the other. Change one habit on the phone and another on the Mac: both changes stay. Remove a habit on one device: it goes on the others too. In Settings you can see where the data lives and when it last was in step. Turn on iCloud Drive for Tracking on every device.
+
+5. Reorder
+Press and hold a card (not the round button) and drag it onto another card; a blue outline shows where it lands. Settings, Reorder habits has drag handles.
+
+6. Reminder and icon number
+Both are per device now - set them on each one. The reminder plans the next 30 days itself and names what is still open. On the Mac the number is on the Dock icon.
+
+7. Safety copies
+A proved copy is made by itself every day and the last 30 are kept. Look at the list in Settings.
+
+8. How it works and What's new
+Both are rewritten. How it works has topics you can open one at a time and "Signs in this app" with every mark and colour. What's new lists every version.
+
+What is different from before: the floating bar's buttons carry their words (Stats, Add, Settings); there is no update button (TestFlight brings new versions); no sample habit on a first start; the old ?fast= links are gone.
+
+Please tell me about: anything that looks wrong at your normal text size, day or night; anything that does not arrive on the other device; Siri not answering; anything you cannot tell what it means.
