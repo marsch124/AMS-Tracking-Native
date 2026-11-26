@@ -77,19 +77,27 @@ private struct Confetti: View {
     }
     var body: some View {
         GeometryReader { geo in
-            ForEach(0..<26, id: \.self) { i in
-                let angle = Double(i) / 26 * 2 * .pi + Double(i % 3) * 0.4
-                let dist = 90 + Double((i * 37) % 150)
-                RoundedRectangle(cornerRadius: i % 3 == 0 ? 5 : 3)
-                    .fill(colors[i % colors.count])
-                    .frame(width: 10, height: 10)
-                    .rotationEffect(.degrees(burst ? Double((i * 53) % 540 - 270) : 0))
-                    .scaleEffect(burst ? 0.6 : 1)
-                    .position(x: geo.size.width / 2 + (burst ? cos(angle) * dist : 0),
-                              y: geo.size.height * 0.45 + (burst ? sin(angle) * dist - 40 : 0))
-                    .opacity(burst ? 0 : 1)
-            }
+            ForEach(0..<26, id: \.self) { i in bit(i, geo.size) }
         }
+    }
+
+    /// One bit: where it flies to (angle and distance from the centre), how much it turns.
+    private func bit(_ i: Int, _ size: CGSize) -> some View {
+        let angle: Double = Double(i) / 26 * 2 * Double.pi + Double(i % 3) * 0.4
+        let dist: Double = 90 + Double((i * 37) % 150)
+        let turn: Double = burst ? Double((i * 53) % 540 - 270) : 0
+        let dx: Double = burst ? cos(angle) * dist : 0
+        let dy: Double = burst ? sin(angle) * dist - 40 : 0
+        let x: Double = Double(size.width) / 2 + dx
+        let y: Double = Double(size.height) * 0.45 + dy
+        let corner: CGFloat = i % 3 == 0 ? 5 : 3
+        return RoundedRectangle(cornerRadius: corner)
+            .fill(colors[i % colors.count])
+            .frame(width: 10, height: 10)
+            .rotationEffect(.degrees(turn))
+            .scaleEffect(burst ? 0.6 : 1)
+            .position(x: x, y: y)
+            .opacity(burst ? 0 : 1)
     }
 }
 

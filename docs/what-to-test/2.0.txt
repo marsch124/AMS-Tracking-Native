@@ -29,3 +29,7 @@ Both are rewritten. How it works has topics you can open one at a time and "Sign
 What is different from before: the floating bar's buttons carry their words (Stats, Add, Settings); there is no update button (TestFlight brings new versions); no sample habit on a first start; the old ?fast= links are gone.
 
 Please tell me about: anything that looks wrong at your normal text size, day or night; anything that does not arrive on the other device; Siri not answering; anything you cannot tell what it means.
+
+
+Earlier versions:
+1.51: Press and hold the Tracking icon: Start Fasting / Stop Fasting. Siri: "Start fasting in Tracking" / "Stop fasting in Tracking". New hand-drawn icon. First time on TestFlight: move your data with Export backup (web app) then Import backup here.
