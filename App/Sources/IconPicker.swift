@@ -48,23 +48,3 @@ struct IconPicker: View {
     }
 }
 
-/// Chips that wrap onto new lines (the "Serves" pills).
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        arrange(proposal.width ?? 300, subviews).size
-    }
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let r = arrange(bounds.width, subviews)
-        for (i, p) in r.points.enumerated() { subviews[i].place(at: CGPoint(x: bounds.minX + p.x, y: bounds.minY + p.y), proposal: .unspecified) }
-    }
-    private func arrange(_ width: CGFloat, _ subviews: Subviews) -> (points: [CGPoint], size: CGSize) {
-        var pts: [CGPoint] = []; var x: CGFloat = 0, y: CGFloat = 0, rowH: CGFloat = 0, maxW: CGFloat = 0
-        for s in subviews {
-            let sz = s.sizeThatFits(.unspecified)
-            if x > 0, x + sz.width > width { x = 0; y += rowH + spacing; rowH = 0 }
-            pts.append(CGPoint(x: x, y: y)); x += sz.width + spacing; rowH = max(rowH, sz.height); maxW = max(maxW, x - spacing)
-        }
-        return (pts, CGSize(width: maxW, height: y + rowH))
-    }
-}
