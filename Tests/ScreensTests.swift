@@ -58,7 +58,9 @@ final class ScreensTests: XCTestCase {
         let h = Habit(name: "Read", createdAt: "2026-11-01", done: days(["2026-11-16", "2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20", "2026-11-21", "2026-11-22"]))
         var d = TrackingData(); d.habits = [h]
         let first = Insights(data: d, today: today).summaryParagraphs().first
-        XCTAssertEqual(first, "Between 16 November and 22 November you ticked 7 days across 1 habit. Read ran every one of its 7 days. Everything with a target made it.")
+        // The dates follow the device's language ("16 November" in Sweden, "November 16" on GitHub's US machines).
+        let a = Fmt.dayMonthLong(DayKey.date("2026-11-16")!), b = Fmt.dayMonthLong(DayKey.date("2026-11-22")!)
+        XCTAssertEqual(first, "Between \(a) and \(b) you ticked 7 days across 1 habit. Read ran every one of its 7 days. Everything with a target made it.")
     }
 
     func testSuggestionsExcludeExisting() {
