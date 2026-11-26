@@ -126,6 +126,7 @@ struct RootView: View {
         .onAppear {
             applyPendingQuickAction()
             QuickActions.takeShellSteps()
+            DispatchQueue.main.async { PictureArgs.apply(nav) }
         }
     }
 
