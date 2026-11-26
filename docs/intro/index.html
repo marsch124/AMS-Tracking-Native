@@ -1,0 +1,995 @@
+<title>Tracking Tour</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Tracking Tour: chapter rail on the left, coach card + a pretend iPhone on the right. Same engine as the other AMS tours.
+   Based on AMS Workouts (WorkoutCompanion) 1.21 (build 1). Update this tour in the release that changes a taught screen. */
+:root {
+  --bg: #F4F6F7; --panel: #FFFFFF; --fg: #16232A; --muted: #5F7078; --line: #E2E8EA;
+  --accent: #3B70F0; --accent-soft: #E6EDFD; --good: #15803D; --good-soft: #E3F4E8; --warn: #C2410C;
+  --shadow: 0 18px 40px rgba(22,35,42,.2);
+  --pbg:#F4F6F7; --pcard:#FFFFFF; --pink:#16232A; --pmuted:#5F7078; --pline:#E2E8EA; --pfield:rgba(120,120,128,.14);
+  --ind:#3B70F0; --gt:#3B70F0; --band:#1E1B4B; --bz:#FF8C1A; --bz-ink:#4A2300; --bzt:#C2410C;
+  --plum:#9C3D8C; --plumt:#9C3D8C; --navy:#2A5194; --grn:#30D158; --grn-ink:#0B3A17; --sess:#15803D;
+  --yel:#FFD60A; --yel-ink:#3D3000; --wut:#A16207; --gold:#B7791F; --acc:#2F6FE0; --red:#DC3D43; --blue:#0A84FF; --pink2:#FF6FA8; --pink2-ink:#5A0F2E;
+  --f-display: "Avenir Next", "Helvetica Neue", system-ui, sans-serif;
+  --f-body: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --f-phone: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0E1416; --panel:#161F22; --fg:#E7EDEE; --muted:#94A6AC; --line:#26343A;
+  --accent:#8FB0FF; --accent-soft:#1B2A4D; --good:#86EFAC; --good-soft:#15301F; --warn:#FDBA74;
+  --shadow: 0 18px 40px rgba(0,0,0,.55);
+  --pbg:#0E1416; --pcard:#161F22; --pink:#E7EDEE; --pmuted:#94A6AC; --pline:#26343A; --pfield:rgba(120,120,128,.3);
+  --gt:#8FB0FF; --bzt:#FDBA74; --plumt:#E29BD6; --sess:#86EFAC; --wut:#FCD34D; --gold:#F6C453;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg:#0E1416; --panel:#161F22; --fg:#E7EDEE; --muted:#94A6AC; --line:#26343A;
+  --accent:#8FB0FF; --accent-soft:#1B2A4D; --good:#86EFAC; --good-soft:#15301F; --warn:#FDBA74;
+  --shadow: 0 18px 40px rgba(0,0,0,.55);
+  --pbg:#0E1416; --pcard:#161F22; --pink:#E7EDEE; --pmuted:#94A6AC; --pline:#26343A; --pfield:rgba(120,120,128,.3);
+  --gt:#8FB0FF; --bzt:#FDBA74; --plumt:#E29BD6; --sess:#86EFAC; --wut:#FCD34D; --gold:#F6C453;
+  color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 15px; line-height: 1.45; margin: 0 }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 22px; }
+svg.i { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none }
+svg.g { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none }
+
+/* Rail */
+.rail { display: flex; flex-direction: column; gap: 4px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; }
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.brand h1 { font-family: var(--f-display); font-size: 19px; line-height: 1.1; margin: 0; text-wrap: balance }
+.brand small { color: var(--muted); font-size: 12px }
+.logo { width: 40px; height: 40px; border-radius: 10px; background: #3B70F0; color: #fff; display: grid; place-items: center; flex: none }
+.chap { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 9px; border: 0; background: none; color: var(--fg); font: inherit; text-align: left; cursor: pointer; }
+.chap:hover { background: var(--accent-soft) }
+.chap:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.chap .n { color: var(--muted); font-size: 12px; margin-left: auto; font-variant-numeric: tabular-nums; white-space: nowrap }
+.chap.cur { background: var(--accent-soft); color: var(--accent); font-weight: 600 }
+.chap.done .n { color: var(--good) }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; margin: 10px 2px 2px }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s }
+.railnote { color: var(--muted); font-size: 12px; margin: 4px 2px }
+
+/* Coach */
+.main { display: grid; grid-template-columns: minmax(0,1fr); gap: 14px; min-width: 0; align-content: start }
+.topnote { margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 13.5px }
+.coach { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px 16px; align-items: center; }
+.coach .eyebrow { grid-column: 1 / -1; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); font-weight: 600; display: flex; gap: 8px; align-items: center }
+.coach .eyebrow .kind { color: var(--muted); font-weight: 500 }
+.coach h2 { font-family: var(--f-display); font-size: 23px; line-height: 1.2; margin: 0; text-wrap: balance }
+.coach p { margin: 4px 0 0; color: var(--fg); max-width: 62ch }
+.coach .btns { display: flex; gap: 8px; align-items: center }
+.btn { font: inherit; font-weight: 600; border-radius: 9px; padding: 8px 16px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer }
+.btn.main-b { background: #3B70F0; border-color: #3B70F0; color: #fff }
+.btn.main-b:disabled { opacity: .45; cursor: default }
+.btn.ghost { border-color: transparent; color: var(--muted) }
+.answers { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px }
+.ans { font: inherit; padding: 8px 14px; border-radius: 9px; border: 1.5px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer; text-align: left }
+.ans:hover { border-color: var(--accent) }
+.ans.right { border-color: var(--good); background: var(--good-soft); color: var(--good); font-weight: 600 }
+.ans.wrong { border-color: var(--warn); color: var(--warn); text-decoration: line-through }
+.feedback { grid-column: 1 / -1; font-weight: 600; color: var(--good); min-height: 1.4em; margin: 0 }
+.feedback.no { color: var(--warn) }
+
+/* Stage = pretend iPhone, 390 x 760, scaled to fit */
+.stagebox { position: relative; width: min(100%, 390px); aspect-ratio: 390 / 760; border-radius: 40px; overflow: hidden; box-shadow: 0 0 0 6px #1f1f23, var(--shadow); justify-self: center; background: var(--pbg) }
+.stage { position: absolute; left: 0; top: 0; width: 390px; height: 760px; transform-origin: 0 0; font-family: var(--f-phone); font-size: 15px; line-height: 1.3; color: var(--pink); background: var(--pbg); overflow: hidden; -webkit-user-select: none; user-select: none }
+:where(.stage button) { font: inherit; color: inherit }
+:where(.stage input) { font: inherit; color: var(--pink); -webkit-user-select: text; user-select: text }
+/* ---- The pretend iPhone: AMS Tracking 2.0. Every class here starts with tk- ---- */
+:root { --pbg:#f2f4f8; --pcard:#ffffff; --pink:#16181d; --pmuted:#656d7a; --pline:rgba(0,0,0,.07); --pfield:rgba(120,120,128,.14);
+  --ac:#3b70f0; --gr:#2fa96d; --rd:#d9463e; --am:#e0a80f; --dg:#e5484d; --stale:#7a5b06; --chart:#24925c; --gold:#c9a227; --tkundo:#7ea4f7; --tkshadow:rgba(20,30,60,.07) }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --pbg:#0d1117; --pcard:#161b26; --pink:#eceef2; --pmuted:#8d93a1; --pline:rgba(255,255,255,.08); --stale:#e0a80f; --chart:#2fa96d; --tkundo:#2c5fd8; --tkshadow:rgba(0,0,0,.35) } }
+:root[data-theme="dark"] { --pbg:#0d1117; --pcard:#161b26; --pink:#eceef2; --pmuted:#8d93a1; --pline:rgba(255,255,255,.08); --stale:#e0a80f; --chart:#2fa96d; --tkundo:#2c5fd8; --tkshadow:rgba(0,0,0,.35) }
+
+.tk-sbar { position: absolute; left: 0; right: 0; top: 0; height: 44px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 30px 6px 34px; font-weight: 600; font-size: 15px; z-index: 40; pointer-events: none; background: linear-gradient(var(--pbg) 70%, transparent) }
+.tk-bat { width: 25px; height: 12px; border: 1.5px solid var(--pink); border-radius: 4px; position: relative; opacity: .8 }
+.tk-bat::after { content: ""; position: absolute; left: 1.5px; top: 1.5px; bottom: 1.5px; width: 70%; background: var(--pink); border-radius: 2px }
+.tk-scr { overflow-y: auto; overflow-x: hidden; scrollbar-width: none }
+.tk-scr::-webkit-scrollbar { display: none }
+.tk-page { position: absolute; inset: 0; padding: 46px 16px 110px }
+.tk-sp { flex: 1 }
+.tk-dim { color: var(--pmuted) }
+svg.tkg { fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none }
+
+/* Today */
+.tk-list { display: flex; flex-direction: column; gap: 10px }
+.tk-card { position: relative; display: flex; align-items: center; gap: 12px; border-radius: 20px; padding: 11px 14px; box-shadow: 0 2px 5px var(--tkshadow); cursor: pointer; background: color-mix(in oklab, var(--hc) 17%, var(--pcard)); transition: transform .15s }
+.tk-card.zoned { padding-bottom: 25px }
+.tk-card.arm-g { outline: 2.5px solid var(--gr); transform: translateX(46px) }
+.tk-card.drop { outline: 2px solid var(--ac) }
+.tk-ringw { position: relative; width: 56px; height: 56px; display: grid; place-items: center; flex: none }
+.tk-ring { position: absolute; inset: 0; width: 56px; height: 56px }
+.tk-circle { position: relative; width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--hc); background: none; display: grid; place-items: center; cursor: pointer; padding: 0; color: var(--hc) }
+.tk-circle.on { background: var(--hc); color: #fff; box-shadow: 0 3px 4px rgba(0,0,0,.12) }
+.tk-circle svg { stroke-width: 2.1 }
+.tk-mid { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px }
+.tk-name { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--pink); white-space: nowrap; min-width: 0 }
+.tk-name > span { overflow: hidden; text-overflow: ellipsis }
+.tk-name svg { color: var(--hc) }
+.tk-part { color: var(--pmuted); font-weight: 700; cursor: pointer; padding: 0 1px; border-radius: 6px }
+.tk-part.pd { color: var(--hc); font-weight: 800 }
+.tk-sep { font-style: normal; color: var(--pmuted); opacity: .5; padding: 0 4px }
+.tk-ndot { width: 8px; height: 8px; border-radius: 50%; background: var(--hc); box-shadow: 0 0 0 3px color-mix(in oklab, var(--hc) 25%, transparent); margin: 0 6px; flex: none }
+.tk-dots { display: flex; gap: 5px }
+.tk-dot { display: grid; place-items: center; border-radius: 50%; background: var(--pline); color: var(--pmuted); font-style: normal; font-weight: 700 }
+.tk-dot.on { background: var(--hc); color: #fff }
+.tk-dot.sk { background: none; border: 1.5px solid var(--hc); color: var(--hc); opacity: .75 }
+.tk-stat { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 70px }
+.tk-num { font-size: 22px; font-weight: 800; letter-spacing: -.5px; font-variant-numeric: tabular-nums; line-height: 1.1; display: flex; align-items: center; gap: 3px }
+.tk-lab { font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--pmuted); line-height: 1.2; white-space: pre-line }
+.tk-wk { display: flex; align-items: center; gap: 2px; font-size: 10.5px; font-weight: 700; color: var(--pmuted); opacity: .85 }
+.tk-zones { position: absolute; left: 14px; right: 14px; bottom: 6px; display: flex; gap: 12px; font-size: 8.5px; font-weight: 700; letter-spacing: .9px; color: var(--pmuted); opacity: .85; pointer-events: none }
+.tk-zones span:first-child { width: 56px; text-align: center }
+.tk-zones span:nth-child(2) { flex: 1 }
+.tk-lbs { display: flex; flex-direction: column; gap: 8px; margin-top: 16px }
+.tk-lb { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid var(--pline); border-radius: 14px; background: var(--pcard); box-shadow: 0 2px 5px var(--tkshadow); font-weight: 700; font-size: 15px; color: var(--pink); cursor: pointer; text-align: left }
+.tk-lb svg:first-child { color: var(--ac) }
+.tk-lb svg:last-child { color: var(--pmuted); margin-left: auto }
+.tk-float { position: absolute; left: 50%; transform: translateX(-50%); bottom: 14px; display: flex; gap: 8px; padding: 6px 10px; background: var(--pcard); border-radius: 999px; box-shadow: 0 6px 12px rgba(0,0,0,.18); z-index: 30 }
+.tk-fb { width: 62px; height: 44px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-size: 10px; font-weight: 600; color: var(--pmuted); cursor: pointer; padding: 0 }
+.tk-fb svg { width: 21px; height: 21px; color: var(--pink) }
+.tk-toast { position: absolute; left: 16px; right: 16px; bottom: 92px; z-index: 90; display: flex; align-items: center; justify-content: center; gap: 14px; background: var(--pink); color: var(--pbg); padding: 12px 18px; border-radius: 999px; font-weight: 600; font-size: 14.5px; box-shadow: 0 4px 12px rgba(0,0,0,.18) }
+.tk-toast button { border: 0; background: none; color: var(--tkundo); font-weight: 800; font-size: 14.5px; cursor: pointer; padding: 0 }
+
+/* Pages */
+.tk-top { display: flex; align-items: center; justify-content: space-between; min-height: 40px; margin-bottom: 2px }
+.tk-back { display: flex; align-items: center; border: 0; background: none; color: var(--ac); font-size: 16px; padding: 4px 0; cursor: pointer; min-height: 40px }
+.tk-back svg { width: 20px; height: 20px }
+.tk-editb { display: flex; align-items: center; gap: 5px; border: 0; background: none; color: var(--ac); font-weight: 600; font-size: 16px; cursor: pointer }
+.tk-editb svg { width: 16px; height: 16px }
+.tk-ptitle { display: flex; align-items: center; gap: 8px; font-size: 32px; line-height: 1.1; font-weight: 800; margin: 2px 0 0 }
+.tk-psub { color: var(--pmuted); font-size: 15px; font-weight: 500; margin: 2px 0 12px }
+.tk-dc { background: var(--pcard); border-radius: 22px; padding: 16px; box-shadow: 0 2px 5px var(--tkshadow); margin-bottom: 14px }
+.tk-dc h3 { font-size: 20px; font-weight: 800; margin: 0 0 8px; display: flex; align-items: center; gap: 8px }
+.tk-calhd { display: flex; align-items: center; gap: 8px; margin-bottom: 4px }
+.tk-calhd h3 { margin: 0; flex: 1 }
+.tk-pill { display: flex; align-items: center; gap: 5px; border: 0; border-radius: 999px; padding: 0 10px; min-height: 34px; font-size: 13px; font-weight: 700; background: color-mix(in srgb, var(--ac) 12%, transparent); color: var(--ac); cursor: pointer }
+.tk-pill svg { width: 15px; height: 15px }
+.tk-pill.on { background: var(--ac); color: #fff }
+.tk-chev { width: 34px; height: 34px; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--ac) 12%, transparent); color: var(--ac); display: grid; place-items: center; cursor: pointer; padding: 0 }
+.tk-chev svg { width: 16px; height: 16px }
+.tk-hint { font-size: 13px; color: var(--pmuted); margin: 2px 0 8px }
+.tk-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px }
+.tk-wd { font-size: 11px; font-weight: 700; color: var(--pmuted); text-align: center }
+.tk-cell { position: relative; aspect-ratio: 1; border-radius: 12px; border: 0; background: var(--pline); color: var(--pink); font: inherit; font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; display: grid; place-items: center; padding: 0; cursor: pointer }
+.tk-cell.dn { background: var(--hc); color: #fff }
+.tk-cell.sk { background: none; border: 2px dashed var(--hc); color: var(--hc); opacity: .75 }
+.tk-cell.fu { opacity: .45; cursor: default }
+.tk-cell.fu.sk { opacity: .75 }
+.tk-cell.td { box-shadow: inset 0 0 0 2px var(--hc) }
+.tk-cell i { position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: currentColor }
+.tk-tcell { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 54px; border: 0; background: none; padding: 0; font: inherit; cursor: pointer }
+.tk-tcell > b { font-size: 11px; color: var(--pmuted) }
+.tk-tcell.td > b { color: var(--pink) }
+.tk-tc { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums }
+.tk-tc.met { background: var(--gr); color: #fff }
+.tk-tc.und { background: var(--pline); color: var(--pink) }
+.tk-tc.run { background: var(--rd); color: #fff }
+.tk-tc.emp { border: 1.5px solid var(--pline) }
+.tk-tc.skp { border: 2px dashed var(--hc); color: var(--hc) }
+.tk-legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; font-weight: 600; color: var(--pmuted); margin-top: 8px }
+.tk-legend span { display: flex; align-items: center; gap: 4px }
+.tk-legend i { width: 12px; height: 12px; border-radius: 50%; display: inline-block }
+.tk-vac { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 40px; margin-top: 10px; border: 2px dashed var(--pline); border-radius: 12px; background: none; color: var(--pmuted); font-weight: 600; font-size: 13px; cursor: pointer }
+.tk-vac svg { width: 18px; height: 18px }
+.tk-mnotes { border-top: 1px solid var(--pline); margin-top: 10px; padding-top: 8px; font-size: 14.5px }
+.tk-mnotes b { color: var(--hc); margin-right: 8px }
+.tk-yr { display: grid; grid-template-columns: repeat(32, 1fr); gap: 2px }
+.tk-yr i { aspect-ratio: 1; border-radius: 2px; background: var(--pline); display: block }
+.tk-yr i.p { background: var(--hc) }
+.tk-yr i.f { opacity: .35 }
+.tk-yr em { font-style: normal; font-size: 7px; font-weight: 800; color: var(--pmuted); line-height: 1; display: grid; place-items: center }
+.tk-row { display: flex; gap: 8px; font-size: 14.5px; padding: 2px 0 }
+.tk-row span { color: var(--pmuted); font-weight: 500 }
+.tk-row b { font-variant-numeric: tabular-nums }
+.tk-acts { display: flex; flex-direction: column; gap: 10px }
+.tk-ab { min-height: 46px; border: 1px solid var(--pline); border-radius: 14px; background: var(--pcard); color: var(--ac); font-weight: 600; font-size: 16px; cursor: pointer }
+.tk-ab.red { border: 0; background: none; color: var(--dg) }
+.tk-track { position: relative; display: flex; gap: 1px; height: 12px; margin: 14px 10px 4px }
+.tk-track b { display: block; height: 100%; border-radius: 6px }
+.tk-track u { position: absolute; top: -8px; width: 3px; height: 26px; border-radius: 2px; background: var(--pink) }
+.tk-tl { display: flex; justify-content: space-between; margin: 0 10px 8px; font-size: 10px; font-weight: 700; color: var(--pmuted) }
+.tk-stage { display: flex; gap: 8px; align-items: baseline; margin: 6px 0 }
+.tk-stage i { width: 10px; height: 10px; border-radius: 50%; flex: none }
+.tk-stage b { font-size: 14.5px }
+.tk-stage small { display: block; color: var(--pmuted); font-size: 13px }
+.tk-stage.faded { opacity: .55 }
+
+/* Stats and Last week */
+.tk-tiles { display: flex; gap: 8px; margin: 8px 0 }
+.tk-tiles div { flex: 1; text-align: center; font-size: 20px; font-weight: 800; color: var(--hc); line-height: 1.2 }
+.tk-tiles small { display: block; font-size: 10px; font-weight: 700; color: var(--pmuted); text-transform: uppercase }
+.tk-30 { display: flex; gap: 2px }
+.tk-30 i { flex: 1; aspect-ratio: 1; border-radius: 3px; background: var(--pline) }
+.tk-30 i.p { background: var(--hc) }
+.tk-rec { display: flex; align-items: center; gap: 5px; font-weight: 700; font-size: 14.5px; color: var(--hc); margin-bottom: 8px }
+.tk-bars { display: flex; align-items: flex-end; gap: 8px; height: 90px; margin-top: 6px }
+.tk-bars div { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; font-size: 11px; color: var(--pmuted) }
+.tk-bars i { width: 100%; max-width: 26px; background: var(--ac); border-radius: 7px 7px 4px 4px; display: block }
+.tk-sec { font-size: 20px; font-weight: 800; margin: 16px 0 6px }
+.tk-sec small { display: block; font-size: 13px; font-weight: 500; color: var(--pmuted) }
+.tk-note { background: var(--pcard); border-radius: 16px; padding: 12px 14px; box-shadow: 0 2px 5px var(--tkshadow); margin-bottom: 8px; font-size: 14.5px }
+.tk-note b { font-weight: 800 }
+.tk-note small { display: block; color: var(--pmuted); font-size: 13px; margin-top: 2px }
+.tk-words p { margin: 0 0 10px; font-size: 16px; line-height: 1.45 }
+.tk-outl { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; border: 1px solid var(--pline); border-radius: 14px; background: var(--pcard); color: var(--ac); font-weight: 700; font-size: 15px; margin: 8px 0; cursor: pointer; width: 100% }
+.tk-outl svg { width: 18px; height: 18px }
+
+/* Sheets, dialogs */
+.tk-shade { position: absolute; inset: 0; background: rgba(0,0,0,.35); z-index: 55 }
+.tk-sheet { position: absolute; left: 0; right: 0; bottom: 0; top: 46px; background: var(--pbg); border-radius: 20px 20px 0 0; z-index: 60; display: flex; flex-direction: column; box-shadow: 0 -6px 24px rgba(0,0,0,.25) }
+.tk-sheet .tk-sb { flex: 1; padding: 14px 16px 10px; min-height: 0 }
+.tk-shead { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 0; font-weight: 700; font-size: 17px }
+.tk-shead button { border: 0; background: none; color: var(--ac); font-weight: 600; font-size: 17px; cursor: pointer }
+.tk-sfoot { display: flex; gap: 10px; padding: 10px 16px 18px; background: var(--pbg) }
+.tk-sfoot button { flex: 1; min-height: 44px; border-radius: 14px; font-size: 16px; cursor: pointer }
+.tk-sfoot .c { border: 1px solid var(--pline); background: var(--pcard); font-weight: 600; color: var(--pink) }
+.tk-sfoot .s { border: 0; background: var(--ac); color: #fff; font-weight: 700 }
+.tk-h2 { font-size: 22px; font-weight: 800; margin: 0 0 6px }
+.tk-lbl { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--pmuted); margin: 14px 0 4px }
+.tk-in { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--pline); background: var(--pcard); font-size: 16px; color: var(--pink) }
+.tk-small { font-size: 13px; color: var(--pmuted); margin: 4px 0 }
+.tk-prev { display: flex; align-items: center; gap: 12px; border-radius: 20px; padding: 11px 14px; border: 1px solid var(--pline); background: color-mix(in oklab, var(--hc) 10%, var(--pcard)); margin: 6px 0 }
+.tk-prev .tk-circle { width: 44px; height: 44px }
+.tk-icons { display: flex; gap: 6px; flex-wrap: wrap }
+.tk-ib { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--pline); background: var(--pcard); display: grid; place-items: center; cursor: pointer; color: var(--pink); padding: 0 }
+.tk-ib.sel { border: 2px solid var(--ac) }
+.tk-ib svg { width: 24px; height: 24px }
+.tk-sw { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--pline); background: var(--pcard); display: grid; place-items: center; cursor: pointer; padding: 0 }
+.tk-sw.sel { border: 2px solid var(--ac) }
+.tk-sw i { width: 26px; height: 26px; border-radius: 50%; display: block }
+.tk-typ { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border-radius: 16px; background: var(--pcard); border: 2px solid transparent; text-align: left; cursor: pointer; margin-bottom: 8px }
+.tk-typ.sel { border-color: var(--ac) }
+.tk-typ svg { width: 23px; height: 23px; color: var(--ac) }
+.tk-typ b { display: block; font-size: 15px }
+.tk-typ small { display: block; font-size: 13px; color: var(--pmuted) }
+.tk-chips { display: flex; gap: 6px }
+.tk-chip { width: 44px; height: 44px; border-radius: 12px; border: 2px solid transparent; background: var(--pcard); font-weight: 700; font-size: 14px; color: var(--pmuted); cursor: pointer; padding: 0 }
+.tk-chip.sel { border-color: var(--ac); color: var(--ac) }
+.tk-fld { display: flex; gap: 8px; margin: 4px 0 }
+.tk-fld span { padding: 8px 12px; border-radius: 10px; background: var(--pfield); font-size: 15px }
+.tk-tg { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; font-size: 16px }
+.tk-sw2 { width: 48px; height: 29px; border-radius: 15px; background: var(--gr); position: relative; flex: none }
+.tk-sw2::after { content: ""; position: absolute; right: 2px; top: 2px; width: 25px; height: 25px; border-radius: 50%; background: #fff }
+.tk-sw2.off { background: var(--pfield) }
+.tk-sw2.off::after { right: auto; left: 2px }
+.tk-gh { font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--pmuted); margin: 16px 0 6px 4px }
+.tk-grp { background: var(--pcard); border-radius: 16px; box-shadow: 0 2px 5px var(--tkshadow); overflow: hidden }
+.tk-srow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 6px 14px; border: 0; background: none; font: inherit; font-size: 15px; font-weight: 600; color: var(--pink); text-align: left; cursor: pointer }
+.tk-srow + .tk-srow, .tk-srow + .tk-rem, .tk-rem + .tk-srow { border-top: 1px solid var(--pline) }
+.tk-srow svg { width: 18px; height: 18px; color: var(--ac) }
+.tk-srow .d { margin-left: auto; font-weight: 500; color: var(--pmuted); font-size: 14px }
+.tk-srow .ch { width: 15px; height: 15px; color: var(--pmuted); margin-left: 6px }
+.tk-srow .d + .ch { margin-left: 6px }
+.tk-srow > .ch:last-child { margin-left: auto }
+.tk-srow .d ~ .ch { margin-left: 6px }
+.tk-seg { display: flex; margin-left: auto; border-radius: 8px; background: var(--pfield); padding: 2px; font-size: 13px; font-weight: 600 }
+.tk-seg span { padding: 3px 10px; border-radius: 6px; color: var(--pmuted) }
+.tk-seg span.s { background: var(--pcard); color: var(--pink); box-shadow: 0 1px 2px rgba(0,0,0,.2) }
+.tk-rem { padding: 8px 14px }
+.tk-rem .l { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600 }
+.tk-rem .l svg { width: 18px; height: 18px; color: var(--ac) }
+.tk-rem .l .tk-sw2 { margin-left: auto }
+.tk-rem small { display: block; font-size: 13px; color: var(--pmuted); margin-top: 4px }
+.tk-gfoot { font-size: 12.5px; color: var(--pmuted); margin: 5px 4px 0 }
+.tk-topic { background: var(--pcard); border-radius: 18px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 5px var(--tkshadow) }
+.tk-topic > button { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 0; font: inherit; cursor: pointer; text-align: left; color: var(--pink) }
+.tk-topic > button b { font-size: 16.5px; font-weight: 800 }
+.tk-topic > button svg { color: var(--ac); width: 22px; height: 22px }
+.tk-topic > button em { margin-left: auto; font-style: normal; font-size: 13px; font-weight: 600; color: var(--ac) }
+.tk-sg { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--pmuted); margin: 12px 0 6px }
+.tk-sign { display: flex; gap: 12px; align-items: flex-start; margin: 7px 0; font-size: 14.5px }
+.tk-mk { width: 38px; height: 26px; display: grid; place-items: center; flex: none }
+.tk-ro { width: 22px; height: 22px; border-radius: 50%; border: 3.5px solid currentColor; display: block }
+.tk-sp1 { width: 14px; height: 14px; border-radius: 50%; display: block }
+.tk-pick { padding: 4px 8px 12px }
+.tk-file { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border: 0; border-bottom: 1px solid var(--pline); background: var(--pcard); font: inherit; font-size: 15px; color: var(--pink); text-align: left; cursor: pointer }
+.tk-file svg { width: 24px; height: 24px; color: var(--ac) }
+.tk-alert { position: absolute; left: 10px; right: 10px; bottom: 12px; z-index: 80; display: flex; flex-direction: column; gap: 8px }
+.tk-ag { background: var(--pcard); border-radius: 14px; overflow: hidden; text-align: center }
+.tk-ag h4 { margin: 0; padding: 14px 16px 2px; font-size: 13px; color: var(--pmuted); font-weight: 600 }
+.tk-ag p { margin: 0; padding: 0 16px 12px; font-size: 13px; color: var(--pmuted) }
+.tk-ag button { display: block; width: 100%; min-height: 52px; border: 0; border-top: 1px solid var(--pline); background: none; font-size: 20px; color: var(--ac); cursor: pointer }
+.tk-ag button.red { color: var(--dg) }
+.tk-ag.cn button { font-weight: 600 }
+.tk-shade2 { position: absolute; inset: 0; background: rgba(0,0,0,.35); z-index: 75 }
+
+/* Pretend Home Screen */
+.tk-home { position: absolute; inset: 0; background: linear-gradient(160deg, #2b3f66, #6b5aa8 60%, #c27a8d); z-index: 20; color: #fff }
+.tk-hico { position: absolute; left: 36px; top: 120px; width: 70px; text-align: center; font-size: 12px }
+.tk-hico button { display: block; width: 66px; height: 66px; margin: 0 auto 4px; border: 0; border-radius: 16px; background: #3b70f0; color: #fff; cursor: pointer; padding: 0; display: grid; place-items: center }
+.tk-hico button svg { width: 40px; height: 40px; stroke-width: 2.2 }
+.tk-hdim { position: absolute; inset: 0; background: rgba(0,0,0,.35); z-index: 2 }
+.tk-hmenu { position: absolute; left: 36px; top: 200px; width: 250px; background: rgba(250,250,252,.96); color: #16181d; border-radius: 14px; overflow: hidden; z-index: 5 }
+.tk-hmenu button { display: flex; align-items: center; justify-content: space-between; width: 100%; border: 0; background: none; padding: 12px 14px; text-align: left; font-size: 17px; color: #16181d; cursor: pointer }
+.tk-hmenu button small { display: block; font-size: 13px; color: #656d7a }
+.tk-hmenu svg { width: 22px; height: 22px }
+.tk-siri { position: absolute; left: 14px; right: 14px; bottom: 120px; z-index: 6; background: rgba(250,250,252,.97); color: #16181d; border-radius: 22px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.35) }
+.tk-siri small { display: block; font-size: 12px; font-weight: 700; color: #656d7a; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px }
+.tk-siri p { margin: 0 0 10px; font-size: 17px }
+.tk-siri p.r { font-weight: 700 }
+
+/* Highlight: no position here (it would break absolutely placed boxes) */
+.target { z-index: 2; animation: ring 1.6s ease-in-out infinite; border-radius: 9px }
+@keyframes ring { 0%,100% { box-shadow: 0 0 0 2px #E6B53F, 0 0 0 6px rgba(230,181,63,.35) } 50% { box-shadow: 0 0 0 2px #E6B53F, 0 0 0 11px rgba(230,181,63,0) } }
+@keyframes pop { from { transform: translate(-50%, 8px); opacity: .3 } to { transform: translate(-50%, 0); opacity: 1 } }
+
+/* Finish */
+.finish { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px }
+.finish h3 { font-family: var(--f-display); margin: 0 0 8px; font-size: 19px }
+.finish label { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; border-top: 1px solid var(--line); cursor: pointer }
+.finish input { width: 18px; height: 18px; accent-color: #3B70F0; margin-top: 2px; flex: none }
+
+@media (min-width: 1020px) {
+  .main { grid-template-columns: minmax(0,1fr) 402px; align-items: start }
+  .topnote, .finish { grid-column: 1 / -1 }
+  .coach { grid-column: 1; grid-template-columns: minmax(0,1fr); position: sticky; top: 16px }
+  .stagebox { grid-column: 2; grid-row: 2 }
+  .coach { grid-row: 2 }
+}
+@media (max-width: 820px) {
+  .wrap { grid-template-columns: minmax(0,1fr) }
+  .rail { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px }
+  .brand { width: 100% }
+  .chap .n { display: none }
+  .railnote, .bar { width: 100% }
+  .coach { grid-template-columns: minmax(0,1fr) }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important } }
+</style>
+
+<div class="wrap">
+  <nav class="rail" id="rail" aria-label="Chapters"></nav>
+  <main class="main">
+    <p class="topnote">Practice copy, nothing changes in your real app.</p>
+    <section class="coach" id="coach" aria-live="polite"></section>
+    <div class="stagebox" id="stagebox"><div class="stage" id="stage"></div></div>
+    <section class="finish" id="finish" hidden></section>
+  </main>
+</div>
+<script>
+/* ---------- Icons: simple hand-drawn line shapes, 24-pt grid, stroke 1.9, round ends, no fill. ---------- */
+const ICON = {
+  grid: 'M4.5 4.5h6v6h-6Z M13.5 4.5h6v6h-6Z M4.5 13.5h6v6h-6Z M13.5 13.5h6v6h-6Z',
+  moon: 'M18.5 14.5A7.5 7.5 0 0 1 9.5 5.5a7.5 7.5 0 1 0 9 9Z',
+  calendar: 'M4.5 6h15v13.5h-15Z M4.5 10h15 M8.5 3.5v4 M15.5 3.5v4',
+  plus: 'M12 5v14M5 12h14',
+  chart: 'M5 20v-7 M10 20V8 M15 20v-6 M20 20V4',
+  bell: 'M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5Z M10 20.5h4',
+  cloud: 'M7 18a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17 9a4.5 4.5 0 0 1 .5 9Z',
+  meditate: 'M12 4.8a1.7 1.7 0 1 0 0 .01 M12 9v3.5 M6 17.5c1.8-1.3 3.6-2 6-2s4.2.7 6 2 M7.5 12.5 12 11l4.5 1.5',
+  dumb: 'M3 10v4 M6 8v8 M18 8v8 M21 10v4 M6 12h12',
+  book: 'M5 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H5Z M19 5h-6 M19 5v12h-6',
+  sprout: 'M12 20v-8 M12 12c0-3.5-2.5-5.5-6-5.5 0 3.5 2.5 5.5 6 5.5Z M12 14c0-3 2-5 5.5-5 0 3-2 5-5.5 5Z',
+  play: 'M8 5.5v13l11-6.5Z', stop: 'M7 7h10v10H7Z',
+  flame: 'M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2.2-4.5.2 1.2.8 2 1.6 2.4C10.4 8 10.5 5.5 12 3Z',
+  check: 'M5 12.5l5 5 9-10.5',
+  chevR: 'M9 6l6 6-6 6', chevL: 'M15 6l-6 6 6 6',
+  pen: 'M4 20l4-1 10-10-3-3L5 16Z M13.5 6.5l3 3',
+  sliders: 'M4 7h9 M17 7h3 M13 5v4 M4 17h3 M11 17h9 M7 15v4',
+  bulb: 'M9 17h6 M10 20h4 M12 3.5a5.5 5.5 0 0 0-3.2 10c.5.4.7.9.7 1.5V17h5v-2c0-.6.2-1.1.7-1.5A5.5 5.5 0 0 0 12 3.5Z',
+  target: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z',
+  export: 'M12 15V4 M8 8l4-4 4 4 M5 12v7h14v-7',
+  import: 'M12 4v11 M8 11l4 4 4-4 M5 19.5h14',
+  case: 'M4 8h16v11H4Z M9 8V5.5h6V8',
+  scroll: 'M7 3.5h10v14a3 3 0 0 1-3 3H7Z M7 3.5a3 3 0 0 0-3 3v1h3',
+  help: 'M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17Z M9.8 9.6a2.3 2.3 0 0 1 4.4 .8c0 1.5-2.2 1.8-2.2 3.3 M12 16.8v.1',
+  reorder: 'M5 9h14 M5 15h14',
+  timer: 'M12 8v4l2.5 2 M5 13a7 7 0 1 0 14 0 7 7 0 1 0-14 0 M10 3.5h4',
+  mountain: 'M3.5 19.5l6-11 3.5 6 2-3 5.5 8Z',
+  doc: 'M7 3.5h7l4 4v13H7Z M14 3.5v4h4 M9.5 12h6 M9.5 15.5h6',
+  fork: 'M8 4v6a2 2 0 0 0 2 2v8 M6 4v5 M10 4v5 M16 20V4c-2 1-3 3.5-3 6.5V13h3',
+  phone: 'M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H8A1.5 1.5 0 0 1 6.5 19V5A1.5 1.5 0 0 1 8 3.5Z M11 17.8h2'
+};
+const icon = (n, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
+const ico = (n, px) => `<svg class="tkg" width="${px}" height="${px}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[n]}"/></svg>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- The pretend app: made-up habits, numbers and dates only. Today is Thursday 26 Nov 2026. ---------- */
+const DOT = ' \u00B7 ';
+const MON = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const COLORS = ['#3b70f0', '#e0447c', '#2fa96d', '#ee8b2c', '#d9463e', '#7a5af8', '#2aa8c4', '#c9a227'];
+const COLORNAMES = ['Blue', 'Pink', 'Green', 'Orange', 'Red', 'Purple', 'Teal', 'Yellow'];
+const STAGES = [
+  { name: 'Digestion', from: 0, to: 4, hint: 'the body is still processing the last meal', hex: '#d9463e' },
+  { name: 'Settling in', from: 4, to: 12, hint: 'blood sugar and insulin drift down', hex: '#e0a80f' },
+  { name: 'Fat burning', from: 12, to: 16, hint: 'the body leans on its fat stores', hex: '#7bc496' },
+  { name: 'Deep fast', from: 16, to: 20, hint: 'ketosis territory for many people', hex: '#2fa96d' }
+];
+const FASTDAYS = { 1: 15, 2: 16, 3: 17, 4: 16, 5: 14, 6: 16, 7: 18, 8: 16, 9: 15, 10: 16, 11: 16, 12: 17, 13: 14, 14: 16, 15: 16, 16: 19, 17: 16, 18: 15, 19: 16, 20: 16, 21: 17, 22: 14, 23: 16, 24: 16, 25: 16 };
+const MEDDONE = [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 16, 17, 18, 19, 20, 23, 24, 25];
+const baseHabits = () => [
+  { id: 'med', name: 'Meditate', icon: 'meditate', color: COLORS[0], type: 'daily', base: 3, best: 5, dots: ['d', 'd', 'd', '-', '-', '-', '-'], cal: { done: MEDDONE.slice(), skip: [7, 8], notes: [] } },
+  { id: 'work', name: 'Workout', icon: 'dumb', color: COLORS[3], type: 'weekly', target: 3, wk: 5, dots: ['d', 'd', '-', '-', '-', '-', '-'] },
+  { id: 'read', name: 'Walk | Read | Write', parts: ['Walk', 'Read', 'Write'], icon: 'book', color: COLORS[2], type: 'daily', base: 12, best: 14, dots: ['d', 'd', 'd', '-', '-', '-', '-'], partsDone: [] },
+  { id: 'fast', name: 'Intermittent Fasting', icon: 'moon', color: COLORS[5], type: 'timer', goal: 16, dots: ['d', 'd', 'd', '-', '-', '-', '-'] }
+];
+const START = () => ({ stack: [], hid: 'med', sheet: null, spage: null, alert: null, home: false, menu: false, siri: false,
+  H: baseHabits(), fast: { mode: 'eat', h: 6.3, start: '20:13' }, toast: null, noteMode: false, swipe: null, dropOn: null,
+  form: { name: '', type: 'daily', target: 3, color: 4, icon: 'meditate' }, rem: false, signs: false, topics: {}, picked: null, cp: 0 });
+let S = START();
+const set = (o, fn) => { S = Object.assign(START(), o || {}); if (fn) fn(S); };      // full reset, then what the step needs
+const timers = [];
+const later = (fn, ms) => { const h = setTimeout(fn, ms); timers.push(h); return h; };
+function clearTimers() { while (timers.length) clearTimeout(timers.pop()); }
+
+const hab = id => S.H.find(h => h.id === id);
+const isDone = h => h.parts ? h.partsDone.length > 0 : h.dots[3] === 'd';
+const wkCount = h => h.dots.filter(d => d === 'd').length;
+const fmtDur = h => { const m = Math.round(h * 60); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); };
+const addClock = (c, h) => { const [a, b] = c.split(':').map(Number); const m = (a * 60 + b + Math.round(h * 60)) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+const ringHex = p => p < 1 / 3 ? '#d9463e' : p < 2 / 3 ? '#e0a80f' : '#2fa96d';
+const timeNow = () => S.fast.mode === 'run' ? addClock(S.fast.start, S.fast.h) : S.fast.mode === 'eat' ? '18:31' : '9:41';
+const pk = () => [S.home ? 'home' : '', S.stack.join('>'), S.hid, S.sheet, S.spage, S.signs ? 's' : ''].join('|');
+
+/* ---------- Today ---------- */
+function dotsHTML(h, size) {
+  return `<span class="tk-dots">${h.dots.map((d, i) => `<i class="tk-dot ${d === 'd' ? 'on' : d === 's' ? 'sk' : ''}" style="width:${size}px;height:${size}px;font-size:${Math.round(size * .56)}px">${MON[i]}</i>`).join('')}</span>`;
+}
+function nameHTML(h) {
+  const px = h.name.length > 24 ? 13 : h.name.length > 15 ? 14 : 17;
+  const noteDot = h.cal && h.cal.notes.includes(26) ? '<i class="tk-ndot" data-t="note-dot"></i>' : '';
+  if (h.parts) {
+    return `<div class="tk-name" data-t="${h.id}-name" style="font-size:${px}px">${ico(h.icon, 32)}<span style="overflow:visible">${h.parts.map((p, i) => (i ? '<em class="tk-sep">|</em>' : '') + `<b class="tk-part ${h.partsDone.includes(i) ? 'pd' : ''}" data-act="part" data-id="${i}" data-t="part-${i}">${esc(p)}</b>`).join('')}</span></div>`;
+  }
+  return `<div class="tk-name" data-t="${h.id}-name" style="font-size:${px}px">${ico(h.icon, 32)}<span>${esc(h.name)}</span>${noteDot}</div>`;
+}
+function statHTML(h) {
+  if (h.type === 'daily') { const n = h.base + (isDone(h) ? 1 : 0); return `<div class="tk-stat" data-t="stat-${h.id}"><span class="tk-num" style="color:var(--hc)">${n}${ico('flame', 18)}</span><span class="tk-lab">${n === 1 ? 'day' : 'days'}</span></div>`; }
+  if (h.type === 'weekly') { const c = wkCount(h), met = c >= h.target; return `<div class="tk-stat" data-t="stat-${h.id}"><span class="tk-num" style="color:${met ? 'var(--gr)' : 'var(--hc)'}">${c}/${h.target}</span><span class="tk-lab">this week</span><span class="tk-wk">${h.wk || 0}${ico('flame', 12)}${(h.wk || 0) === 1 ? 'week' : 'weeks'}</span></div>`; }
+  const f = S.fast;
+  let inner;
+  if (f.mode === 'run') {
+    if (f.h >= 24) inner = `<span class="tk-num" style="color:var(--am)">${fmtDur(f.h)}</span><span class="tk-lab" style="color:var(--am)">still fasting?\ntap timer to fix</span>`;
+    else if (f.h >= h.goal) inner = `<span class="tk-num" style="color:var(--gr)">${fmtDur(f.h)}</span><span class="tk-lab" style="color:var(--gr)">goal reached</span>`;
+    else inner = `<span class="tk-num" style="color:var(--hc)">${fmtDur(f.h)}</span><span class="tk-lab">${fmtDur(h.goal - f.h)} left</span><span class="tk-lab" style="color:var(--hc)">goal ${addClock(f.start, h.goal)}</span>`;
+  } else if (f.mode === 'eat') inner = `<span class="tk-num" style="color:var(--hc)">${fmtDur(f.h)}</span><span class="tk-lab">eating</span><span class="tk-lab" style="color:var(--hc)">until ${f.start}</span>`;
+  else inner = `${ico('play', 24)}<span class="tk-lab">tap to start</span>`;
+  return `<div class="tk-stat" data-act="fast-edit" data-t="fast-num" style="cursor:pointer">${inner}</div>`;
+}
+function cardHTML(h) {
+  const t = h.type === 'timer', f = S.fast, run = t && f.mode === 'run';
+  let circle;
+  if (t) {
+    let ring = '';
+    if (run && f.h < 99) { const p = Math.min(1, f.h / h.goal); ring = `<svg class="tk-ring" viewBox="0 0 56 56"><circle cx="28" cy="28" r="25.5" fill="none" stroke="var(--pline)" stroke-width="5"/><circle cx="28" cy="28" r="25.5" fill="none" stroke="${ringHex(p)}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(160.2 * Math.max(.01, p)).toFixed(1)} 200" transform="rotate(-90 28 28)"/></svg>`; }
+    circle = `<span class="tk-ringw">${ring}<button class="tk-circle ${run ? 'on' : ''}" data-act="fast-toggle" data-t="fast-btn" aria-label="${run ? 'Stop fast' : 'Start fast'}">${ico(run ? 'stop' : 'play', 23)}</button></span>`;
+  } else {
+    const d = isDone(h);
+    circle = `<span class="tk-ringw"><button class="tk-circle ${d ? 'on' : ''}" data-act="check" data-id="${h.id}" data-hold="${h.id}" data-t="check-${h.id}" aria-label="${d ? 'Done today' : 'Not done today'}">${d ? ico('check', 23) : ''}</button></span>`;
+  }
+  const arm = S.swipe && S.swipe === h.id ? ' arm-g' : '', drop = S.dropOn === h.id ? ' drop' : '';
+  const hasEdit = t && (run || f.mode === 'eat');
+  const zones = t ? `<div class="tk-zones" data-t="zone-labels"><span>${run ? 'STOP' : 'START'}</span><span>STATS</span>${hasEdit ? '<span>EDIT</span>' : ''}</div>` : '';
+  return `<div class="tk-card${t ? ' zoned' : ''}${arm}${drop}" style="--hc:${h.color}" data-act="open-habit" data-id="${h.id}" data-t="card-${h.id}">
+    ${circle}<div class="tk-mid">${nameHTML(h)}${dotsHTML(h, t ? 14 : 16)}</div>${statHTML(h)}${zones}</div>`;
+}
+function todayHTML() {
+  return `<div class="tk-scr tk-page" data-keep="1"><div class="tk-list" data-t="list">${S.H.map(cardHTML).join('')}</div>
+    <div class="tk-lbs"><button class="tk-lb" data-act="open-week" data-t="review-week">${ico('bulb', 18)}Last week${ico('chevR', 15)}</button>
+    <button class="tk-lb" data-act="soon">${ico('bulb', 18)}Last month${ico('chevR', 15)}</button></div></div>
+    <div class="tk-float" data-t="floatbar">
+      <button class="tk-fb" data-act="open-stats" data-t="btn-stats">${ico('chart', 21)}Stats</button>
+      <button class="tk-fb" data-act="add" data-t="btn-add">${ico('plus', 21)}Add</button>
+      <button class="tk-fb" data-act="open-settings" data-t="btn-settings">${ico('sliders', 21)}Settings</button></div>`;
+}
+
+/* ---------- A habit's page ---------- */
+function topBar(edit) { return `<div class="tk-top"><button class="tk-back" data-act="page-back" data-t="page-back">${ico('chevL', 20)}Back</button>${edit ? `<button class="tk-editb" data-act="soon">${ico('pen', 16)}Edit</button>` : ''}</div>`; }
+function calHTML(h) {
+  const isT = h.type === 'timer', c = h.cal || { done: [], skip: [], notes: [] };
+  const lead = 6, cells = [];
+  for (let i = 0; i < lead; i++) cells.push('<span></span>');
+  for (let n = 1; n <= 30; n++) {
+    const fu = n > 26, td = n === 26;
+    if (isT) {
+      const sk = (S.fskip || []).includes(n);
+      let cls = 'emp', txt = '';
+      if (sk) { cls = 'skp'; txt = '\u2013'; } else if (n < 26 && FASTDAYS[n]) { cls = FASTDAYS[n] >= h.goal ? 'met' : 'und'; txt = FASTDAYS[n]; } else if (td && S.fast.mode === 'run') { cls = 'run'; txt = Math.floor(S.fast.h); }
+      cells.push(`<button class="tk-tcell${td ? ' td' : ''}" style="--hc:${h.color}" data-act="soon"><b>${n}</b><span class="tk-tc ${cls}">${txt}</span></button>`);
+    } else {
+      const dn = c.done.includes(n) && !fu, sk = c.skip.includes(n) && !dn;
+      const note = c.notes.includes(n);
+      cells.push(`<button class="tk-cell${dn ? ' dn' : ''}${sk ? ' sk' : ''}${fu ? ' fu' : ''}${td ? ' td' : ''}" data-act="${fu && !sk ? 'none' : 'cal-day'}" data-id="${n}" data-t="day-${n}">${n}${note ? '<i></i>' : ''}</button>`);
+    }
+  }
+  const hint = S.noteMode ? 'Note mode: tap a day to write or edit its note.' : isT ? 'Tap a day to record a forgotten fast (0 = skip day) or to edit a recorded one.' : 'Tap a day to cycle: done \u2192 skip day \u2192 empty.';
+  const legend = isT ? `<div class="tk-legend"><span><i style="background:var(--gr)"></i>goal met</span><span><i style="background:var(--pline)"></i>fell short</span><span><i style="background:var(--rd)"></i>running</span><span><i style="border:1.5px dashed var(--hc)"></i>skip day</span></div>` : '';
+  const notes = (c.notes || []).sort((a, b) => a - b).map(n => `<div><b>${n}</b>${esc((c.noteText || {})[n] || 'travel day')}</div>`).join('');
+  return `<div class="tk-dc" data-t="cal">
+    <div class="tk-calhd"><h3>November 2026</h3><button class="tk-pill ${S.noteMode ? 'on' : ''}" data-act="note-mode" data-t="cal-note">${ico('pen', 15)}Note</button>
+      <button class="tk-chev" data-act="soon" aria-label="Previous month">${ico('chevL', 16)}</button><button class="tk-chev" data-act="soon" aria-label="Next month">${ico('chevR', 16)}</button></div>
+    <p class="tk-hint">${hint}</p>
+    <div class="tk-cal">${MON.map(l => `<span class="tk-wd">${l}</span>`).join('')}${cells.join('')}</div>${legend}
+    ${notes ? `<div class="tk-mnotes">${notes}</div>` : ''}
+    <button class="tk-vac" data-act="range" data-t="skip-range-btn">${ico('case', 18)}Skip several days (vacation)\u2026</button></div>`;
+}
+function stagesHTML(h) {
+  const f = S.fast, run = f.mode === 'run', cur = run ? STAGES.filter(s => s.from <= f.h).pop() : null;
+  const x = hh => Math.min(100, hh / 20 * 100);
+  return `<div class="tk-dc" data-t="stages"><h3>Fasting stages</h3>
+    <div class="tk-track">${STAGES.map(s => `<b style="width:${(s.to - s.from) / 20 * 100}%;background:${s.hex};opacity:${run && cur.name !== s.name ? .3 : 1}"></b>`).join('')}${run ? `<u style="left:${x(Math.min(20, f.h))}%"></u>` : ''}</div>
+    <div class="tk-tl"><span>0h</span><span>4h</span><span>12h</span><span>16h</span><span>20h+</span></div>
+    <div style="font-size:15px;font-weight:600">${run ? `Now: <span style="color:${cur.hex};font-weight:800">${cur.name}</span> \u00B7 ${fmtDur(f.h)} h` : '<span class="tk-dim">While a fast runs, a marker shows which stage you are in.</span>'}</div>
+    <hr style="border:0;border-top:1px solid var(--pline);margin:10px 0 4px">
+    ${STAGES.map(s => `<div class="tk-stage${run && cur.name !== s.name ? ' faded' : ''}"><i style="background:${s.hex}"></i><div><b>${s.name}</b> <span class="tk-dim" style="font-size:13px">${s.to === 20 ? '16h+' : s.from + '\u2013' + s.to + 'h'}</span><small>${s.hint}</small></div></div>`).join('')}
+    <p class="tk-small" style="font-size:12px">A popular approximation from fasting literature \u2014 every body is different. Not medical advice.</p></div>
+    <div class="tk-dc"><h3>Fasts</h3>
+      <div class="tk-row"><span>Average</span><b>15:48 h</b></div><div class="tk-row"><span>Longest</span><b>19:02 h</b></div><div class="tk-row"><span>Goal met</span><b>16 days</b></div><div class="tk-row"><span>Total fasts</span><b>25</b></div>
+      <p class="tk-small">Tap a fast to correct its times or delete it.</p></div>`;
+}
+function yearHTML(h) {
+  const rows = [];
+  const lens = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], L = 'JFMAMJJASOND';
+  for (let m = 0; m < 12; m++) {
+    rows.push(`<em>${L[m]}</em>`);
+    for (let d = 1; d <= 31; d++) {
+      if (d > lens[m]) { rows.push('<i style="visibility:hidden"></i>'); continue; }
+      const past = m < 10 || (m === 10 && d <= 26), on = past && m >= 8 && ((m * 7 + d * 3) % 5 !== 0);
+      rows.push(`<i class="${on ? 'p' : ''}${!past ? ' f' : ''}"></i>`);
+    }
+  }
+  return `<div class="tk-dc"><div class="tk-calhd"><h3>2026</h3><button class="tk-pill" data-act="soon">${ico('export', 15)}Poster</button></div><div class="tk-yr" style="grid-template-columns:10px repeat(31,1fr)">${rows.join('')}</div></div>`;
+}
+function detailHTML() {
+  const h = hab(S.hid); if (!h) return '';
+  const sub = h.type === 'timer' ? 'Start / stop timer habit' : h.type === 'weekly' ? `Weekly target \u00B7 ${h.target}\u00D7 a week` : 'Daily habit';
+  return `<div class="tk-scr tk-page" data-keep="1" style="--hc:${h.color}">${topBar(true)}
+    <h1 class="tk-ptitle">${ico(h.icon, 34).replace('<svg', `<svg style="color:${h.color}"`)}<span>${esc(h.name)}</span></h1><p class="tk-psub">${sub}</p>
+    ${calHTML(h)}${h.type === 'timer' ? stagesHTML(h) : ''}${yearHTML(h)}
+    <div class="tk-acts"><button class="tk-ab" data-act="soon">Archive habit</button><button class="tk-ab red" data-act="soon">Delete habit</button></div></div>`;
+}
+
+/* ---------- Stats and Last week ---------- */
+function statsHTML() {
+  const rows = [
+    { h: hab('med'), tiles: [['3d', 'streak'], ['5d', 'best'], ['78%', 'this month'], ['71%', 'last month']], rec: '2 days to your record', n: 22 },
+    { h: hab('work'), tiles: [['5wk', 'streak'], ['8wk', 'best'], ['5\u00D7', 'this month'], ['11\u00D7', 'last month']], rec: null, n: 14 },
+    { h: hab('read'), tiles: [['12d', 'streak'], ['14d', 'best'], ['83%', 'this month'], ['80%', 'last month']], rec: '2 days to your record', n: 25 }
+  ];
+  return `<div class="tk-scr tk-page" data-keep="1">${topBar(false)}<h1 class="tk-ptitle">Stats</h1><p class="tk-psub">All habits at a glance</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <button class="tk-lb" data-act="open-week" data-t="btn-notes">${ico('bulb', 18)}Last week\u2019s analysis${ico('chevR', 15)}</button>
+      <button class="tk-lb" data-act="soon">${ico('grid', 18)}Last month${ico('chevR', 15)}</button>
+      <button class="tk-lb" data-act="soon">${ico('mountain', 18)}Aspirations${ico('chevR', 15)}</button></div>
+    ${rows.map(r => `<div class="tk-dc" style="--hc:${r.h.color}" data-t="stats-card-${r.h.id}"><div class="tk-name" style="font-size:17px;font-weight:800">${ico(r.h.icon, 19)}<span>${esc(r.h.name)}</span></div>
+      <div class="tk-tiles">${r.tiles.map(t => `<div>${t[0]}<small>${t[1]}</small></div>`).join('')}</div>
+      ${r.rec ? `<div class="tk-rec">${ico('flame', 15)}${r.rec}</div>` : ''}
+      <div class="tk-30">${Array.from({ length: 30 }, (_, i) => `<i class="${(i * 7 + r.n) % 4 !== 0 ? 'p' : ''}"></i>`).join('')}</div></div>`).join('')}
+    <div class="tk-dc" data-t="achievements"><h3><span style="color:var(--gold)">${ico('target', 22)}</span>Achievements</h3>
+      <div class="tk-tiles" style="--hc:var(--gold)"><div>412<small>days tracked</small></div><div>14d<small>best streak</small></div><div>19:02h<small>longest fast</small></div></div>
+      <div style="font-size:14px;font-weight:700">Meditate</div><div style="display:flex;gap:6px;margin:4px 0 8px"><span style="background:#3b70f0;color:#fff;border-radius:99px;padding:2px 10px;font-weight:800;font-size:13px">7d</span><span style="background:#3b70f0;color:#fff;border-radius:99px;padding:2px 10px;font-weight:800;font-size:13px">14d</span><span style="border:1.5px dashed var(--pmuted);color:var(--pmuted);border-radius:99px;padding:2px 10px;font-weight:800;font-size:13px">30d</span></div></div></div>`;
+}
+function lastWeekHTML() {
+  const vals = [3, 4, 3, 4, 2, 4, 3], mx = 4, best = 'Tuesday';
+  return `<div class="tk-scr tk-page" data-keep="1">${topBar(false)}<h1 class="tk-ptitle" style="font-size:28px">Last week\u2019s analysis</h1><p class="tk-psub">16\u201322 Nov</p>
+    <div class="tk-dc" data-t="lw-chart"><h3 style="font-size:17px">Habits completed each day</h3><div class="tk-bars">${vals.map((v, i) => `<div><span>${v}</span><i style="height:${v / mx * 70}px;${i === 1 ? '' : 'opacity:.55'}"></i><span style="margin-top:3px">${MON[i]}</span></div>`).join('')}</div>
+      <p class="tk-small">${best} carried the most: 4 of 4 habits.</p></div>
+    <div class="tk-sec" style="margin-top:4px">The week in words</div>
+    <div class="tk-dc tk-words" data-t="lw-words"><p>You finished 19 ticks across the week, which is one more than the week before. Meditate ran six days out of seven.</p><p>Measured against your last eight weeks, this was an ordinary good week, not a record.</p></div>
+    <button class="tk-outl" data-act="soon">${ico('export', 18)}Send this summary as text</button>
+    <button class="tk-outl" data-act="soon">${ico('export', 18)}Send the week as a picture</button>
+    <div class="tk-sec">Your aspirations</div>
+    <div class="tk-note"><b>Strong and durable into my seventies</b> <span class="tk-dim">2/3</span><small>2 of 3 habits ran last week</small></div>
+    <div class="tk-sec">How it went</div>
+    <div class="tk-note"><b>Workout</b><small>3 of 3 this week, your fifth week in a row on target.</small></div>
+    <div class="tk-sec">What to try next week<small>Read from your own data. Every note names the figure it came from, so you can disagree with it.</small></div>
+    <div class="tk-note"><b>Fridays are your quiet day</b><small>Meditate was ticked on 2 of the last 8 Fridays, against 7 of 8 on other days.</small></div>
+    <div class="tk-sec">Something new?<small>Only ideas. Nothing here is added until you add it.</small></div>
+    <div class="tk-note"><b>Drink water</b> <span class="tk-dim">daily</span><small>Easy to tick, and it sits well next to your other habits.</small><button class="tk-outl" style="min-height:36px;margin-bottom:0" data-act="soon">${ico('plus', 16)}Add this habit</button></div></div>`;
+}
+
+/* ---------- Sheets ---------- */
+function shell(title, body, foot, save) {
+  return `<div class="tk-shade" data-act="sheet-cancel"></div><div class="tk-sheet">${title ? `<div class="tk-shead"><span></span><b>${title}</b><span></span></div>` : ''}<div class="tk-sb tk-scr" data-keep="1">${body}</div>${foot}</div>`;
+}
+const footer = (saveLabel, saveAct) => `<div class="tk-sfoot"><button class="c" data-act="sheet-cancel" data-t="sheet-cancel">Cancel</button><button class="s" data-act="${saveAct}" data-t="sheet-save">${saveLabel}</button></div>`;
+function addSheet() {
+  const f = S.form, col = COLORS[f.color], shown = f.name.trim() || 'Your habit';
+  const prevDots = `<span class="tk-dots">${MON.map(l => `<i class="tk-dot" style="width:16px;height:16px;font-size:9px">${l}</i>`).join('')}</span>`;
+  const body = `<h2 class="tk-h2" data-t="form-title">New habit</h2>
+    <div class="tk-prev" style="--hc:${col}" data-t="form-preview"><span class="tk-circle" style="width:44px;height:44px">${f.type === 'timer' ? ico('play', 18) : ''}</span>
+      <div class="tk-mid"><div class="tk-name" style="font-size:${shown.length > 18 ? 15 : 17}px">${ico(f.icon, 28)}<span>${esc(shown)}</span></div>${prevDots}
+      <span style="font-size:12px;color:var(--pmuted);display:flex;align-items:center;gap:4px">${f.type === 'timer' ? 'tap to start' : `<b style="color:var(--pink);font-size:15px">1</b>${ico('flame', 14)}${f.type === 'weekly' ? 'week' : 'day'}`}</span></div></div>
+    <div class="tk-lbl">Name</div><input class="tk-in" data-in="name" data-t="f-name" placeholder="e.g. Meditate" value="${esc(f.name)}" maxlength="40" autocomplete="off">
+    <p class="tk-small">A | in the name makes parts, like Morning | Evening.</p>
+    <div class="tk-lbl">Icon</div><div class="tk-icons">${['meditate', 'dumb', 'book', 'sprout', 'moon', 'bell'].map(n => `<button class="tk-ib ${f.icon === n ? 'sel' : ''}" data-act="form-icon" data-id="${n}">${ico(n, 24)}</button>`).join('')}</div>
+    <div class="tk-lbl">Colour</div><div class="tk-icons">${COLORS.map((c, i) => `<button class="tk-sw ${f.color === i ? 'sel' : ''}" data-act="form-color" data-id="${i}" aria-label="${COLORNAMES[i]}"><i style="background:${c}"></i></button>`).join('')}</div>
+    <div class="tk-lbl">Type</div>
+    ${[['daily', 'check', 'Daily check', 'Tick it off once a day'], ['weekly', 'target', 'Weekly target', 'Hit a number per week, on any days'], ['timer', 'timer', 'Start / Stop', 'One button toggles a timer, e.g. fasting']].map(([id, ic, t, sub]) => `<button class="tk-typ ${f.type === id ? 'sel' : ''}" data-act="form-type" data-id="${id}" data-t="type-${id}">${ico(ic === 'check' ? 'check' : ic, 23)}<span><b>${t}</b><small>${sub}</small></span></button>`).join('')}
+    ${f.type === 'weekly' ? `<div class="tk-lbl">Times per week</div><div class="tk-chips" data-t="target-chips">${[1, 2, 3, 4, 5, 6, 7].map(n => `<button class="tk-chip ${f.target === n ? 'sel' : ''}" data-act="form-target" data-id="${n}">${n}</button>`).join('')}</div>` : ''}
+    ${f.type === 'daily' ? `<div class="tk-lbl">On which days?</div><div class="tk-chips">${MON.map(l => `<button class="tk-chip sel" data-act="soon">${l}</button>`).join('')}</div>` : ''}`;
+  return shell('', body, footer('Save', 'form-save'));
+}
+function fastSheet() {
+  const f = S.fast, run = f.mode === 'run';
+  const body = `<h2 class="tk-h2">${run ? 'Fast in progress' : 'Edit fast'}</h2>
+    <div class="tk-lbl">Started</div><div class="tk-fld" data-t="fast-start"><span>Wed, 25 Nov</span><span>${f.start}</span></div>
+    ${run ? '' : `<div class="tk-lbl">Ended</div><div class="tk-fld"><span>Thu, 26 Nov</span><span>${addClock(f.start, 16.08)}</span></div>`}
+    <p class="tk-small" style="font-size:14px" data-t="fast-duration">Duration: ${run ? fmtDur(f.h) : '16:05'} h</p>
+    <button class="tk-ab red" style="min-height:40px;margin-top:6px" data-act="soon">Delete this fast</button>`;
+  return shell('', body, footer('Save', 'fast-save'));
+}
+function rangeSheet() {
+  const body = `<h2 class="tk-h2">Skip several days</h2>
+    <p class="tk-small" style="font-size:14px">On holiday or out sick? Every day in the range becomes an excused skip day \u2014 streaks survive, and days already done stay done.</p>
+    <div class="tk-lbl">First day</div><div class="tk-fld"><span>Sat, 28 Nov 2026</span></div>
+    <div class="tk-lbl">Last day</div><div class="tk-fld"><span>Mon, 30 Nov 2026</span></div>
+    <div class="tk-tg"><span>Apply to all habits</span><i class="tk-sw2"></i></div>`;
+  return shell('', body, footer('Mark skip days', 'range-save'));
+}
+function noteSheet() {
+  const body = `<h2 class="tk-h2">Note for Thu, 26 Nov</h2><textarea class="tk-in" rows="3" placeholder="e.g. skipped, travel day"></textarea>`;
+  return shell('', body, footer('Save', 'note-save'));
+}
+function settingsRow(ic, title, o) { o = o || {}; return `<button class="tk-srow" ${o.act ? `data-act="${o.act}"` : 'data-act="soon"'} ${o.t ? `data-t="${o.t}"` : ''}>${ic ? ico(ic, 18) : ''}<span>${title}</span>${o.d ? `<span class="d" ${o.dc ? `style="color:${o.dc}"` : ''}>${o.d}</span>` : ''}${o.ch ? ico('chevR', 15).replace('class="tkg"', 'class="tkg ch"') : ''}</button>`; }
+function settingsHTML() {
+  const g = (t, body, foot) => `<div class="tk-gh">${t}</div><div class="tk-grp">${body}</div>${foot ? `<div class="tk-gfoot">${foot}</div>` : ''}`;
+  const remNote = S.rem ? 'Every day at 20:00 \u2014 also when the app is closed.' : 'Pick the time, then switch it on.';
+  return `${g('iCloud', settingsRow('case', 'Stored in', { d: 'iCloud Drive' }) + settingsRow('', 'State', { d: 'Up to date', dc: 'var(--chart)' }) + settingsRow('', 'Last synced', { d: '2 minutes ago' }) + settingsRow('export', 'Sync now') + settingsRow('scroll', 'Safety copies', { d: '30', ch: true, act: 'open-copies', t: 'row-copies' }), 'A copy is made by itself every day, 30 kept.').replace('<div class="tk-gh">', '<div class="tk-gh" data-t="grp-icloud">')}
+    ${g('Your data', settingsRow('export', 'Export backup (JSON)') + settingsRow('import', 'Import backup', { act: 'import', t: 'row-import' }) + settingsRow('chart', 'Export CSV for Excel') + settingsRow('timer', 'Import fasting history', { ch: true }))}
+    ${g('On this device', `<div class="tk-rem"><div class="l">${ico('bell', 18)}<span>Daily reminder</span><span class="tk-dim" style="font-weight:500;font-size:14px;margin-left:8px">20:00</span><button class="tk-sw2 ${S.rem ? '' : 'off'}" style="border:0;cursor:pointer;padding:0" data-act="reminder" data-t="reminder-toggle" aria-label="Daily reminder"></button></div><small data-t="reminder-note">${remNote}</small></div>` + settingsRow('sliders', 'Show the count on the app icon', { t: 'row-badge' }))}
+    ${g('Habits and look', settingsRow('reorder', 'Reorder habits', { ch: true }) + `<div class="tk-srow" style="cursor:default">${ico('grid', 18)}<span>Layout</span><span class="tk-seg"><span class="s">List</span><span>Grid</span></span></div><div class="tk-srow" style="cursor:default">${ico('moon', 18)}<span>Theme</span><span class="tk-seg"><span class="s">Auto</span><span>Light</span><span>Dark</span></span></div>` + settingsRow('case', 'Archived habits', { d: '(0)', ch: true }) + settingsRow('export', 'Send last week\u2019s report', { ch: true }))}
+    <div class="tk-gh"></div><div class="tk-grp">${settingsRow('help', 'How it works', { ch: true, act: 'open-guide', t: 'row-guide' })}${settingsRow('scroll', 'What\u2019s new', { ch: true })}</div>
+    <p class="tk-small" style="text-align:center;margin-top:10px">Version 2.0 (24)</p>`;
+}
+const SIGNS = [
+  ['Today', [
+    ['<i class="tk-sp1" style="background:var(--ac);width:22px;height:22px;display:grid;place-items:center;color:#fff">' + ico('check', 14) + '</i>', 'Big circle with a tick', 'the habit is done today. Tap again to undo.'],
+    [ico('plus', 22).replace('<svg', '<svg style="color:var(--ac)"'), 'Plus (\uFF0B)', 'add a new habit.'],
+    [ico('flame', 22).replace('<svg', '<svg style="color:var(--ac)"'), 'Flame and a number', 'your streak: days (or weeks) in a row.'],
+    ['<i class="tk-dot on" style="--hc:var(--ac);width:16px;height:16px;font-size:9px">M</i>', 'Week dots, M to S', 'this week, Monday first. Filled = done, dimmed = not scheduled that day, dashed outline = skip day. Tap a dot to open that day in the calendar.'],
+    ['<i class="tk-sp1" style="border:2px dashed var(--ac)"></i>', 'Skip day (hollow, dashed outline)', 'an excused day. It neither breaks nor extends a streak.'],
+    ['<i class="tk-sp1" style="width:8px;height:8px;background:var(--ac)"></i>', 'Small dot next to a name', 'today has a note. Tap it to read it.']]],
+  ['Fasting', [
+    ['<i class="tk-ro" style="color:var(--rd)"></i>', 'Fasting ring, red', 'a fast is running and is still in the first third of its goal.'],
+    ['<i class="tk-ro" style="color:var(--am)"></i>', 'Fasting ring, yellow', 'the middle third of the goal.'],
+    ['<i class="tk-ro" style="color:var(--gr)"></i>', 'Fasting ring, green', 'nearing or past the goal.'],
+    [ico('moon', 22).replace('<svg', '<svg style="color:var(--ac)"'), 'Moon (icon menu)', '\u201CStart Fasting\u201D: no fast is running.'],
+    [ico('fork', 22), 'Fork and knife (icon menu)', '\u201CStop Fasting\u201D: a fast is running; the line under it says since when.']]],
+  ['Colours and warnings', [
+    ['<b style="color:var(--stale);font-size:12px">Amber</b>', 'Amber text', 'something is out of date or needs a look: iCloud is not in step, a fast running past 24 hours (\u201Cstill fasting? tap timer to fix\u201D), or an aspiration with nothing running under it.'],
+    ['<b style="color:var(--dg);font-size:12px">Delete</b>', 'Red button text or red Delete', 'it removes something for good. Undo bars and the blue word \u201CUndo\u201D take back the last step for a few seconds.'],
+    ['<i class="tk-sp1" style="background:var(--ac);width:16px;height:16px"></i>', 'Blue', 'the colour of buttons and links. A habit\u2019s own colour always means that habit.']]]
+];
+const TOPICS = ['Your devices and the screens', 'Daily and weekly habits', 'Habits with several parts', 'Fasting (start and stop habits)', 'Siri, Shortcuts and the icon menu', 'Calendar, notes and the past', 'Last week and Last month', 'Stats, milestones and aspirations', 'Adding, editing, reordering', 'iCloud, safety copies and backups', 'Reminder and icon number'];
+const TICONS = ['grid', 'check', 'sliders', 'moon', 'play', 'pen', 'bulb', 'chart', 'plus', 'export', 'bell'];
+function guideHTML() {
+  return `<h2 class="tk-h2" style="font-size:30px;margin-top:6px">How it works</h2><p class="tk-psub" style="margin-bottom:10px">Tap a topic to open it</p>
+    ${TOPICS.map((t, i) => `<div class="tk-topic"><button data-act="topic" data-id="${i}">${ico(TICONS[i], 22)}<b>${t}</b><em>${S.topics[i] ? 'Hide' : 'Show'}</em></button>${S.topics[i] ? '<p class="tk-small" style="margin-top:8px">(Practice copy: only Signs in this app is drawn in full.)</p>' : ''}</div>`).join('')}
+    <div class="tk-topic" data-t="signs-card"><button data-act="signs" data-t="signs">${ico('help', 22)}<b>Signs in this app</b><em>${S.signs ? 'Hide' : 'Show'}</em></button>
+    ${S.signs ? `<p class="tk-small" style="margin:8px 0 0">Every mark and colour that means something, and what it means. A mark or colour keeps the same meaning everywhere.</p><div data-t="sign-rows">${SIGNS.map(([g, rows]) => `<div class="tk-sg">${g}</div>${rows.map(r => `<div class="tk-sign"><span class="tk-mk">${r[0]}</span><span><b>${r[1]}</b> \u2014 ${r[2]}</span></div>`).join('')}`).join('')}</div>` : ''}</div>`;
+}
+function copiesHTML() {
+  const rows = ['Daily 2026-11-26', 'Daily 2026-11-25', 'Daily 2026-11-24', 'Before import 2026-11-20 18.04.12'];
+  return `<p class="tk-small" style="font-size:14px;margin-top:8px">A copy is made by itself every day, 30 kept. Tap one to see what is in it and put it back.</p>
+    <div class="tk-grp" style="margin-top:8px">${rows.map(r => `<button class="tk-srow" data-act="soon"><span>${r}</span><svg class="tkg ch" width="15" height="15" viewBox="0 0 24 24" style="margin-left:auto"><path d="${ICON.chevR}"/></svg></button>`).join('')}</div>`;
+}
+function settingsSheet() {
+  const sub = S.spage;
+  const title = sub === 'copies' ? 'Safety copies' : sub === 'guide' ? '' : 'Settings';
+  const head = `<div class="tk-shead">${sub ? `<button data-act="page-back" data-t="page-back" style="display:flex;align-items:center">${ico('chevL', 20)}Settings</button>` : '<span></span>'}<b>${title}</b><button data-act="sheet-cancel" data-t="sheet-cancel">Done</button></div>`;
+  const body = sub === 'copies' ? copiesHTML() : sub === 'guide' ? guideHTML() : settingsHTML();
+  return `<div class="tk-shade"></div><div class="tk-sheet">${head}<div class="tk-sb tk-scr" data-keep="1">${body}</div></div>`;
+}
+function pickerSheet() {
+  return `<div class="tk-shade" data-act="sheet-cancel"></div><div class="tk-sheet" style="top:300px"><div class="tk-shead"><button data-act="sheet-cancel" data-t="sheet-cancel">Cancel</button><b>Recents</b><span></span></div><div class="tk-pick">
+    <button class="tk-file" data-act="file" data-id="bad" data-t="file-bad">${ico('doc', 24)}<span>Holiday plan.json</span></button>
+    <button class="tk-file" data-act="file" data-id="good" data-t="file-good">${ico('doc', 24)}<span>Tracking backup 2026-11-20.json</span></button></div></div>`;
+}
+function alertHTML() {
+  if (S.alert === 'import') return `<div class="tk-shade2"></div><div class="tk-alert"><div class="tk-ag"><h4>Replace current data with this backup (4 habits)?</h4><p>A copy of your data now is saved first.</p><button class="red" data-act="import-go">Replace</button></div><div class="tk-ag cn"><button data-act="import-cancel" data-t="alert-cancel">Cancel</button></div></div>`;
+  if (S.alert === 'fail') return `<div class="tk-shade2"></div><div class="tk-alert"><div class="tk-ag"><h4>Import failed</h4><p>Not an AMS Tracking backup</p><button data-act="alert-ok" data-t="alert-cancel">OK</button></div></div>`;
+  return '';
+}
+function homeHTML() {
+  const fastOn = S.fast.mode === 'run';
+  const menu = S.menu ? `<div class="tk-hdim" data-act="menu-close"></div><div class="tk-hmenu" data-t="icon-menu">${fastOn
+    ? `<button data-act="quick-stop" data-t="quick-stop"><span>Stop Fasting<small>Since ${S.fast.start}</small></span>${ico('fork', 22)}</button>`
+    : `<button data-act="quick-start" data-t="quick-start"><span>Start Fasting</span>${ico('moon', 22)}</button>`}</div>` : '';
+  const siri = S.siri ? `<div class="tk-siri" data-t="siri"><small>You</small><p>\u201CHey Siri, start fasting in Tracking.\u201D</p><small>Siri</small><p class="r">Fast started at 20:13. Goal 16 h, until 12:13.</p></div>` : '';
+  return `<div class="tk-home">${menu}<div class="tk-hico" style="${S.menu ? 'z-index:3' : ''}"><button data-hold="icon" data-act="icon-tap" data-t="app-icon" aria-label="Tracking">${ico('check', 40)}</button>Tracking</div>${siri}</div>`;
+}
+function toastHTML() {
+  const t = S.toast; if (!t) return '';
+  return `<div class="tk-toast" data-t="toast"><span>${esc(t.text)}</span>${t.undo ? '<button data-act="undo" data-t="undo-btn">Undo</button>' : ''}</div>`;
+}
+
+function renderStage() {
+  const st = document.getElementById('stage');
+  const key = pk(), scrolls = renderStage.scrolls = renderStage.scrolls || {};
+  st.querySelectorAll('[data-keep]').forEach(e => { if (e.dataset.k) scrolls[e.dataset.k] = e.scrollTop; });
+  const ae = document.activeElement, inId = ae && st.contains(ae) ? ae.dataset.in : null, sel = inId ? [ae.selectionStart, ae.selectionEnd] : null;
+  const page = S.stack[S.stack.length - 1] || 'today';
+  let body = page === 'detail' ? detailHTML() : page === 'stats' ? statsHTML() : page === 'lastweek' ? lastWeekHTML() : todayHTML();
+  if (S.home) body = homeHTML();
+  const sheets = { add: addSheet, fastedit: fastSheet, range: rangeSheet, note: noteSheet, settings: settingsSheet, picker: pickerSheet };
+  const over = (S.sheet && sheets[S.sheet] ? sheets[S.sheet]() : '') + alertHTML();
+  st.innerHTML = `<div class="tk-sbar"><span>${timeNow()}</span><span class="tk-bat"></span></div>${body}${S.home ? '' : toastHTML()}${over}`;
+  const prev = renderStage.key; renderStage.key = key;
+  st.querySelectorAll('[data-keep]').forEach(e => { const k = key + '|' + (e.closest('.tk-sheet') ? 'sh' : 'pg'); e.dataset.k = k; e.scrollTop = prev === key ? (scrolls[k] || 0) : 0; });
+  if (inId) { const nf = st.querySelector(`[data-in="${inId}"]`); if (nf) { nf.focus(); try { nf.setSelectionRange(sel[0], sel[1]); } catch (e) {} } }
+  markTarget();
+}
+let toastH = null;
+let pre = [JSON.stringify(baseHabits()), JSON.stringify({ mode: 'eat', h: 6.3, start: '20:13' })];
+const takePre = () => { pre = [JSON.stringify(S.H), JSON.stringify(S.fast)]; };
+function toast(text, undoFn) {
+  const snap = pre[0], fsnap = pre[1];
+  S.toast = { text, undo: undoFn === false ? null : () => { S.H = JSON.parse(snap); S.fast = JSON.parse(fsnap); } };
+  renderStage(); clearTimeout(toastH); toastH = setTimeout(() => { S.toast = null; renderStage(); }, 5000);
+}
+const soon = () => { S.toast = { text: 'Practice copy: not drawn here.', undo: null }; renderStage(); clearTimeout(toastH); toastH = setTimeout(() => { S.toast = null; renderStage(); }, 2200); };
+
+/* ---------- Actions inside the pretend iPhone ---------- */
+const stage = document.getElementById('stage');
+let holdT = null, held = false, ptype = 'mouse';
+stage.addEventListener('pointerdown', ev => {
+  held = false; ptype = ev.pointerType; if (ev.button !== 0) return;
+  const el = ev.target.closest('[data-hold]'); if (!el) return;
+  holdT = setTimeout(() => { held = true; holdAct(el.dataset.hold); }, 520);
+});
+['pointerup', 'pointerleave', 'pointercancel'].forEach(n => stage.addEventListener(n, () => { clearTimeout(holdT); }));
+stage.addEventListener('contextmenu', ev => { const el = ev.target.closest('[data-hold]'); if (!el) return; ev.preventDefault(); clearTimeout(holdT); held = ptype !== 'mouse'; holdAct(el.dataset.hold); });
+function holdAct(id) {
+  takePre();
+  if (id === 'icon') { S.menu = true; renderStage(); emit('icon-menu'); return; }
+  const h = hab(id); if (!h) return;
+  if (h.dots[2] === 'd') { toast('Yesterday is already done', false); return; }
+  h.dots[2] = 'd'; toast('Yesterday marked done'); emit('yesterday', id);
+}
+stage.addEventListener('input', ev => {
+  const k = ev.target.dataset.in; if (!k) return; const v = ev.target.value;
+  if (k === 'name') { S.form.name = v; if (v.trim()) emit('name', v); renderStage(); }
+});
+stage.addEventListener('keydown', ev => { if (ev.key === 'Enter') { const k = ev.target.dataset && ev.target.dataset.in; if (k) ev.target.blur(); } });
+stage.addEventListener('click', ev => {
+  if (held) { held = false; return; }
+  const el = ev.target.closest('[data-act]'); if (!el) return;
+  takePre();
+  act(el.dataset.act, el.dataset.id, el);
+});
+const push = p => { S.stack.push(p); };
+function act(a, id) {
+  switch (a) {
+    case 'soon': soon(); break;
+    case 'none': break;
+    case 'check': { const h = hab(id);
+      if (h.parts) { const had = h.partsDone.includes(0); h.partsDone = had ? [] : [0]; h.dots[3] = h.partsDone.length ? 'd' : '-'; renderStage(); emit('tick', id); break; }
+      const on = h.dots[3] !== 'd'; h.dots[3] = on ? 'd' : '-'; renderStage(); emit('tick', id === 'med' && on); break; }
+    case 'part': { const h = hab('read'), i = +id, had = h.partsDone.includes(i);
+      h.partsDone = had ? h.partsDone.filter(x => x !== i) : h.partsDone.concat([i]).sort(); h.dots[3] = h.partsDone.length ? 'd' : '-';
+      toast(h.parts[i] + (had ? ' cleared' : ' done')); emit('part', i); break; }
+    case 'open-habit': S.hid = id; push('detail'); renderStage(); emit('open-detail', id); break;
+    case 'page-back': if (S.sheet === 'settings' && S.spage) { S.spage = null; } else S.stack.pop(); renderStage(); break;
+    case 'fast-toggle': { const f = S.fast;
+      if (f.mode === 'run') { const len = f.h; f.mode = 'eat'; f.h = 0; f.start = '20:13'; toast('Fast ended \u2014 ' + fmtDur(len) + ' h'); renderStage(); emit('fast-stopped'); }
+      else { S.fast = { mode: 'run', h: 0, start: '20:13' }; toast('Fast started'); emit('fast-started'); } break; }
+    case 'fast-edit': S.sheet = 'fastedit'; renderStage(); emit('fast-open'); break;
+    case 'fast-save': if (S.fast.mode === 'run') { S.fast.start = '19:45'; S.fast.h += 28 / 60; } S.sheet = null; renderStage(); emit('fast-saved'); break;
+    case 'sheet-cancel': S.sheet = S.sheet === 'picker' ? 'settings' : null; if (S.sheet !== 'settings') S.spage = null; renderStage(); break;
+    case 'cal-day': { const h = hab(S.hid), c = h.cal, n = +id;
+      if (S.noteMode) { S.sheet = 'note'; renderStage(); break; }
+      if (c.done.includes(n)) { c.done = c.done.filter(x => x !== n); c.skip.push(n); }
+      else if (c.skip.includes(n)) { c.skip = c.skip.filter(x => x !== n); }
+      else { c.done.push(n); }
+      renderStage(); emit('day-cycle', n); break; }
+    case 'note-mode': S.noteMode = !S.noteMode; renderStage(); emit('note-mode', S.noteMode); break;
+    case 'note-save': { const c = hab(S.hid).cal; if (!c.notes.includes(26)) c.notes.push(26); S.sheet = null; renderStage(); break; }
+    case 'range': S.sheet = 'range'; renderStage(); emit('range-open'); break;
+    case 'range-save': { const h = hab(S.hid); [28, 29, 30].forEach(n => { if (h.cal && !h.cal.skip.includes(n) && !h.cal.done.includes(n)) h.cal.skip.push(n); }); S.fskip = [28, 29, 30]; S.sheet = null; toast('3 days skipped for ' + S.H.length + ' habits'); emit('range-saved'); break; }
+    case 'add': S.form = { name: '', type: 'daily', target: 3, color: S.H.length % 8, icon: 'meditate' }; S.sheet = 'add'; renderStage(); emit('add-open'); break;
+    case 'form-type': S.form.type = id; renderStage(); emit('type', id); break;
+    case 'form-target': S.form.target = +id; renderStage(); break;
+    case 'form-color': S.form.color = +id; renderStage(); break;
+    case 'form-icon': S.form.icon = id; renderStage(); break;
+    case 'form-save': { const f = S.form; if (!f.name.trim()) { const i = document.querySelector('#stage [data-in="name"]'); if (i) i.focus(); break; }
+      const t = f.type === 'timer' ? 'daily' : f.type;
+      S.H.push({ id: 'new', name: f.name.trim(), icon: f.icon, color: COLORS[f.color], type: t, target: t === 'weekly' ? f.target : undefined, wk: 0, base: 0, best: 0, dots: ['-', '-', '-', '-', '-', '-', '-'] });
+      S.sheet = null; renderStage(); emit('habit-saved'); break; }
+    case 'open-stats': push('stats'); renderStage(); emit('stats-open'); break;
+    case 'open-week': push('lastweek'); renderStage(); emit('lastweek-open'); break;
+    case 'open-settings': S.sheet = 'settings'; S.spage = null; renderStage(); emit('settings-open'); break;
+    case 'reminder': S.rem = !S.rem; if (S.rem) toast('Reminder on \u2014 every day at 20:00', false); else renderStage(); emit('reminder-on', S.rem); break;
+    case 'open-copies': S.spage = 'copies'; renderStage(); emit('copies-open'); break;
+    case 'open-guide': S.spage = 'guide'; renderStage(); emit('guide-open'); break;
+    case 'topic': S.topics[id] = !S.topics[id]; renderStage(); break;
+    case 'signs': S.signs = !S.signs; renderStage(); if (S.signs) emit('signs-open'); break;
+    case 'import': S.sheet = 'picker'; renderStage(); emit('picker-open'); break;
+    case 'file': S.sheet = 'settings'; S.alert = id === 'bad' ? 'fail' : 'import'; renderStage(); emit('file', id); break;
+    case 'import-cancel': S.alert = null; renderStage(); emit('import-answer', 'cancel'); break;
+    case 'import-go': S.alert = null; S.toast = { text: 'Backup imported \u2014 4 habits', undo: null }; renderStage(); emit('import-answer', 'replace'); break;
+    case 'alert-ok': S.alert = null; renderStage(); break;
+    case 'icon-tap': break;
+    case 'menu-close': S.menu = false; renderStage(); break;
+    case 'quick-start': S.fast = { mode: 'run', h: 0, start: '20:13' }; S.menu = false; renderStage(); emit('quick-start'); break;
+    case 'quick-stop': S.menu = false; renderStage(); break;
+    case 'undo': if (S.toast && S.toast.undo) { S.toast.undo(); S.toast = null; renderStage(); emit('undo'); } break;
+    default: break;
+  }
+}
+
+/* ---------- Lessons (see, try, check). Every step's setup does a full reset of what that step needs. ---------- */
+const plain = o => set(o);
+const eatMode = () => ({});
+const runMode = (h, start) => set({}, s => { s.fast = { mode: 'run', h, start: start || '20:13' }; });
+const detailOf = (id, o, fn) => set(Object.assign({ stack: ['detail'], hid: id }, o || {}), fn);
+const LESSONS = [
+  { title: 'Today and checking off', icon: 'grid', steps: [
+    { kind: 'look', head: 'One screen, no header', text: 'Tracking opens on Today. There is no header: the first habit card is right at the top, and every card is one habit in its own colour. At the bottom a floating bar carries three buttons with their words: Stats, Add and Settings. Under the cards two permanent buttons lead to Last week and Last month.', target: 'floatbar', setup: () => plain() },
+    { kind: 'look', head: 'Reading a card', text: 'The big round button on the left checks the habit off. Beside it are the hand-drawn icon, the name and seven week dots, M to S, Monday first (filled = done). On the right is the number: for Meditate the flame and 3 mean three days in a row. Tap a dot and the habit\u2019s calendar opens on that day.', target: 'card-med', setup: () => plain() },
+    { kind: 'try', head: 'Tick it off', text: 'Tap the big circle on Meditate.', target: 'check-med', setup: () => plain(), wait: 'tick', when: d => d === true, ok: 'The circle fills, today\u2019s dot fills and the streak goes from 3 to 4. Nothing asks you to confirm. Tap the circle again and the tick goes away, and the streak goes back to 3.' },
+    { kind: 'try', head: 'A habit in parts', text: 'The third card is one habit with three parts: Walk | Read | Write. Tap the word "Read".', target: 'part-1', setup: () => plain(), wait: 'part', when: d => d === 1, ok: 'Read is now written in the habit\u2019s colour and bold, the others stay grey, and the circle is checked: as soon as any part is done, the day counts as complete. A bar says "Read done" with Undo. On the circle itself, one tap picks the first part, two quick taps the second, and so on.' },
+    { kind: 'try', head: 'Forgot yesterday?', text: 'Workout is at 2/3 this week and you did it yesterday too. Press and hold the Workout circle. (On a Mac, right-click it.)', target: 'check-work', setup: () => plain(), wait: 'yesterday', robot: { type: 'rclick' }, ok: 'Yesterday is marked done, a bar says "Yesterday marked done" with Undo, and the card reads 3/3 in green: the weekly target is met. A normal tap still checks today.' },
+    { kind: 'look', head: 'Swipe a card', text: 'On iPhone and iPad you can also swipe a card. Swipe right and the outline turns green when you have gone far enough: let go and the habit is done today (on the fasting card a swipe right stops a running fast, or opens a sheet to record hours). Swipe left, and the outline turns grey: today becomes a skip day. A short swipe does nothing.', target: 'card-med', setup: () => set({ swipe: 'med' }) },
+    { kind: 'check', head: 'Quick check', text: 'You swipe the Meditate card to the left, far enough, and let go. What happens?', answers: ['Today becomes a skip day: it neither breaks nor extends the streak', 'Meditate is deleted', 'Today is marked done'], right: 0, ok: 'Right. A bar says "Today marked as skip day" and offers Undo.' }
+  ] },
+  { title: 'Fasting', icon: 'moon', steps: [
+    { kind: 'look', head: 'The fasting card', text: 'Intermittent Fasting is a Start / Stop habit: its round button shows a play mark. Right now it is the eating window: "6:18 eating, until 20:13". Under the card three tiny words name the touch areas: START under the round button, STATS in the middle (it opens the habit\u2019s page) and EDIT under the number.', target: 'zone-labels', setup: () => plain() },
+    { kind: 'try', head: 'Start the fast', text: 'Tap the round button.', target: 'fast-btn', setup: () => plain(), wait: 'fast-started', ok: 'A bar says "Fast started" with Undo. The button turns solid with a stop mark, a ring appears around it, and the card shows the live time, the time left and "goal 12:13": the goal is 16 hours.' },
+    { kind: 'look', head: 'Reading the ring', text: 'Five hours in. The ring is red in the first third of the goal, yellow in the middle third and green after that. Once the goal is reached the card says "goal reached" in green. A fast that runs past 24 hours turns amber and asks "still fasting? tap timer to fix".', target: 'fast-btn', setup: () => runMode(5.3, '20:13') },
+    { kind: 'try', head: 'Fix a forgotten start', text: 'You actually started at 19:45. Tap the running time on the right, then press "Save".', target: 'fast-num', setup: () => runMode(5.3), wait: 'fast-saved', on: { 'fast-open': 'sheet-save' }, ok: 'The "Fast in progress" sheet shows when it started and the duration. After Save the card follows the new start. A finished fast opens as "Edit fast", with an Ended time and "Delete this fast".' },
+    { kind: 'try', head: 'Open the habit\u2019s page', text: 'Tap the middle of the card, on the name.', target: 'fast-name', setup: () => runMode(5.3), wait: 'open-detail', when: d => d === 'fast', ok: 'The habit\u2019s page opens: the month calendar, Fasting stages, Fasts and the year.' },
+    { kind: 'look', head: 'Fasting stages', text: 'The page shows the commonly cited stages on a coloured track: Digestion (0\u20134 h), Settling in (4\u201312 h), Fat burning (12\u201316 h) and Deep fast (16 h and more). A marker sits at your hour and the card says "Now: Settling in". The calendar above shows each day\u2019s fasted hours in a circle. It is a popular approximation, not medical advice.', target: 'stages', setup: () => detailOf('fast', {}, s => { s.fast = { mode: 'run', h: 5.3, start: '20:13' }; }) },
+    { kind: 'try', head: 'Stop the fast', text: 'Sixteen hours have passed. Tap the round button to end the fast.', target: 'fast-btn', setup: () => runMode(16.083), wait: 'fast-stopped', ok: 'A bar says "Fast ended \u2014 16:05 h" with Undo. The card now counts the eating window, and the day shows in the calendar as a green circle: the goal was met.' },
+    { kind: 'check', head: 'Quick check', text: 'A forgotten fast has run for 26 hours. What does the card say?', answers: ['"still fasting? tap timer to fix", in amber', '"goal reached", in green', 'Nothing, it just keeps counting'], right: 0, ok: 'Right. Tap the timer number and correct the start or end.' }
+  ] },
+  { title: 'A habit\u2019s page and the past', icon: 'calendar', steps: [
+    { kind: 'try', head: 'Open a habit', text: 'Tap the name "Meditate" (not the circle).', target: 'med-name', setup: () => plain(), wait: 'open-detail', when: d => d === 'med', ok: 'The habit\u2019s page opens on top of Today. "Back" at the top left goes back.' },
+    { kind: 'look', head: 'The page', text: 'At the top: the icon, the name and "Daily habit", and a pencil "Edit" on the right. Then the month calendar: filled = done, dashed outline = skip day, pale = not done, faint = still to come. Below it a pixel grid for the year with a Poster button that makes a picture to share. At the bottom: "Archive habit" and, in red, "Delete habit".', target: 'cal', setup: () => detailOf('med') },
+    { kind: 'try', head: 'Fix a day', text: 'Sunday the 22nd was missed. Tap the 22 in the calendar.', target: 'day-22', setup: () => detailOf('med'), wait: 'day-cycle', when: d => d === 22, ok: 'It is now done. Tap it again and it becomes a skip day, once more and it is empty. The streak follows at once.' },
+    { kind: 'try', head: 'Notes', text: 'Tap the "Note" button above the calendar.', target: 'cal-note', setup: () => detailOf('med'), wait: 'note-mode', when: d => d === true, ok: 'The line under the calendar says "Note mode: tap a day to write or edit its note." Days with a note get a small dot, and when today has one, a small dot in the habit\u2019s colour appears next to the name on its card.' },
+    { kind: 'try', head: 'A holiday', text: 'Away for the weekend? Tap "Skip several days (vacation)\u2026", then press "Mark skip days".', target: 'skip-range-btn', setup: () => detailOf('med'), wait: 'range-saved', on: { 'range-open': 'sheet-save' }, ok: 'The 28th to the 30th become dashed skip days, and a bar says "3 days skipped for 4 habits" (the switch "Apply to all habits" was on). Days already done stay done, and Undo takes back exactly the days it added.' },
+    { kind: 'check', head: 'Quick check', text: 'What does a skip day do to a streak?', answers: ['It neither breaks nor extends it', 'It breaks the streak', 'It adds one day to the streak'], right: 0, ok: 'Right. It is an excused day, and it also leaves the completion count.' }
+  ] },
+  { title: 'Adding and changing habits', icon: 'plus', steps: [
+    { kind: 'try', head: 'Add a habit', text: 'Tap "Add" in the floating bar.', target: 'btn-add', setup: () => plain(), wait: 'add-open', ok: 'The "New habit" sheet opens. Its top is a live preview of the card exactly as it will look on Today.' },
+    { kind: 'try', head: 'Name it', text: 'Type "Stretch" in the Name field.', target: 'f-name', setup: () => set({ sheet: 'add' }, s => { s.form = { name: '', type: 'daily', target: 3, color: 4, icon: 'meditate' }; }), wait: 'name', robot: { type: 'type', value: 'Stretch' }, ok: 'The preview follows as you type. Under Name: a | in the name makes parts, like Morning | Evening. Below come Icon, Colour and Type. Cancel and Save sit at the bottom; on a Mac Escape is Cancel.' },
+    { kind: 'try', head: 'Pick a type', text: 'Tap "Weekly target".', target: 'type-weekly', setup: () => set({ sheet: 'add' }, s => { s.form = { name: 'Stretch', type: 'daily', target: 3, color: 4, icon: 'meditate' }; }), wait: 'type', when: d => d === 'weekly', ok: '"Times per week" appears, with 3 chosen, and "On which days?" goes away (that one is for daily habits). Start / Stop is the third type, for timers such as fasting.' },
+    { kind: 'try', head: 'Save', text: 'Press "Save".', target: 'sheet-save', setup: () => set({ sheet: 'add' }, s => { s.form = { name: 'Stretch', type: 'weekly', target: 3, color: 4, icon: 'meditate' }; }), wait: 'habit-saved', ok: 'The new card is at the bottom of Today, reading 0/3 this week. A new habit takes the next colour in turn (here red); you can pick another colour before saving.' },
+    { kind: 'look', head: 'Change, reorder, archive', text: 'The pencil "Edit" on a habit\u2019s page changes it later. A daily habit can become a weekly target and back, and every day you ticked stays. To reorder, press and hold a card (not the round button) and drag it onto another card: a blue outline shows where it will land. Settings also has "Reorder habits" with drag handles, Layout (List or Grid) and Theme. "Archive habit" hides a habit but keeps its history; Delete is for good.', target: 'card-work', setup: () => set({ dropOn: 'work' }) },
+    { kind: 'check', head: 'Quick check', text: 'You change Meditate from a daily check to a weekly target. What happens to the days you ticked?', answers: ['They all stay', 'They are erased', 'Only the current week stays'], right: 0, ok: 'Right. Both kinds record one mark per day and only read it differently. A Start / Stop habit cannot change its type.' }
+  ] },
+  { title: 'Stats and the look back', icon: 'chart', steps: [
+    { kind: 'try', head: 'Open Stats', text: 'Tap "Stats" in the floating bar.', target: 'btn-stats', setup: () => plain(), wait: 'stats-open', ok: 'Stats opens, headed "All habits at a glance".' },
+    { kind: 'look', head: 'A card per habit', text: 'Each habit shows four figures: streak, best, this month and last month (a percentage, or times for a weekly target), and its last 30 days as small squares, oldest on the left, today on the right. When your streak is within 3 days (1 week for weekly habits) of your best, a line says "2 days to your record". At the bottom, Achievements lists the streak milestones you have earned. The fasting habit also gets a rhythm card.', target: 'stats-card-med', setup: () => set({ stack: ['stats'] }) },
+    { kind: 'try', head: 'The weekly look back', text: 'Tap "Last week\u2019s analysis".', target: 'btn-notes', setup: () => set({ stack: ['stats'] }), wait: 'lastweek-open', ok: 'The same page opens from the Last week button on Today.' },
+    { kind: 'look', head: 'A week in words', text: 'It starts with a chart of habits completed each day, naming the best day. Then "The week in words", two or three short paragraphs, with buttons to send them as text or as a picture. Further down come your aspirations (one sentence about who you are becoming, answered each week by how many of its habits ran), "How it went", "What to try next week" and "Something new?" with habit ideas. Nothing is added until you press "Add this habit".', target: 'lw-words', setup: () => set({ stack: ['lastweek'] }) },
+    { kind: 'check', head: 'Quick check', text: 'Where do the written notes in Last week come from?', answers: ['Plain arithmetic on your own data, on your devices', 'An online assistant that reads your habits', 'Other people\u2019s habits'], right: 0, ok: 'Right. Nothing is sent anywhere, and every note names the figure it came from.' }
+  ] },
+  { title: 'Siri, the icon and the reminder', icon: 'bell', steps: [
+    { kind: 'try', head: 'Press and hold the icon', text: 'This is a pretend Home Screen. Press and hold the Tracking icon (on a Mac, right-click it), then tap "Start Fasting".', target: 'app-icon', setup: () => set({ home: true }), wait: 'quick-start', robot: { type: 'rclick' }, on: { 'icon-menu': 'quick-start' }, ok: 'The fast starts at once. The next time you hold the icon it says "Stop Fasting" with "Since 20:13" and a small fork and knife; with no fast running it shows a small moon and "Start Fasting". It always acts on your first fasting habit.' },
+    { kind: 'look', head: 'Siri and Shortcuts', text: 'Nothing to set up: say "Hey Siri, start fasting in Tracking" or "stop fasting in Tracking". Siri changes your data directly and answers out loud, without opening the app. "Start a fast in Tracking" and "End my fast in Tracking" work too. In the Shortcuts app, Start Fasting and Stop Fasting appear by themselves. If Siri says "Open Tracking once, then try again", open the app one time.', target: 'siri', setup: () => set({ home: true, siri: true }) },
+    { kind: 'try', head: 'Open Settings', text: 'Tap "Settings" in the floating bar.', target: 'btn-settings', setup: () => plain(), wait: 'settings-open', ok: 'Settings opens as a sheet, with "Done" at the top right.' },
+    { kind: 'try', head: 'The daily reminder', text: 'Under "On this device" switch "Daily reminder" on.', target: 'reminder-toggle', setup: () => set({ sheet: 'settings' }), wait: 'reminder-on', when: d => d === true, ok: 'The line under it says "Every day at 20:00 \u2014 also when the app is closed." The phone plans the next 30 days itself, at that hour, naming what is still open, for example "2 still open: Intermittent Fasting, Reading". No server is involved.' },
+    { kind: 'look', head: 'The count on the icon', text: 'The app icon can show how many scheduled habits are still open today. It is off until you switch it on here ("Show the count on the app icon"), and it needs the same permission as the reminder. On the Mac the number is on the Dock icon. The reminder and the count are set on each device on its own: your phone may remind you at 20:00 and the Mac not at all.', target: 'row-badge', setup: () => set({ sheet: 'settings' }) },
+    { kind: 'check', head: 'Quick check', text: 'You switch the daily reminder on, on your iPhone. Does your Mac remind you too?', answers: ['No, the reminder is set on each device on its own', 'Yes, iCloud carries it over', 'Only on weekdays'], right: 0, ok: 'Right. Habits and ticks are shared through iCloud; the reminder and the icon number are not.' }
+  ] },
+  { title: 'iCloud, backups and signs', icon: 'cloud', steps: [
+    { kind: 'look', head: 'One file in iCloud', text: 'Settings starts with iCloud. All habits live in one file in iCloud Drive that every device reads and writes. Changes are merged habit by habit: different habits changed on two devices both stay; if both changed the same one, the newest change wins. "State" says "Up to date" in green, or turns amber when iCloud is not in step. Turn on iCloud Drive for Tracking on every device.', target: 'grp-icloud', setup: () => set({ sheet: 'settings' }) },
+    { kind: 'try', head: 'Safety copies', text: 'Tap "Safety copies".', target: 'row-copies', setup: () => set({ sheet: 'settings' }), wait: 'copies-open', ok: 'A copy is made by itself every day and the last 30 are kept, each one read back and checked. Tap one to see how many habits it holds and put it back; your data now is saved as a copy first. A file the app cannot read is never written over, it is parked here.' },
+    { kind: 'try', head: 'Import a backup', text: 'Press "Import backup" and choose "Tracking backup 2026-11-20.json". Then answer the question with "Cancel".', target: 'row-import', setup: () => set({ sheet: 'settings' }), wait: 'import-answer', on: { 'picker-open': 'file-good', 'file': 'alert-cancel' }, ok: 'The app asks first: "Replace current data with this backup (4 habits)?", and says a copy of your data now is saved first. A backup from the Safari web app has the same shape and imports the same way. A file that is not a Tracking backup says "Not an AMS Tracking backup".' },
+    { kind: 'try', head: 'How it works', text: 'Tap "How it works".', target: 'row-guide', setup: () => set({ sheet: 'settings' }), wait: 'guide-open', ok: 'The guide to the whole app, in topics you open one at a time. "What\u2019s new" below it lists every version, newest first.' },
+    { kind: 'try', head: 'Signs in this app', text: 'The last topic explains every mark and colour. Tap "Signs in this app".', target: 'signs', setup: () => set({ sheet: 'settings', spage: 'guide' }), wait: 'signs-open', ok: 'It opens in place.' },
+    { kind: 'look', head: 'Marks that mean one thing', text: 'A mark or a colour means the same thing everywhere. A ring around the fasting button: red, yellow, green. A dashed outline: a skip day. A small dot next to a name: today has a note. Amber text: something needs a look. Red text: it removes something for good. Blue: buttons and links; a habit\u2019s own colour always means that habit.', target: 'sign-rows', setup: () => set({ sheet: 'settings', spage: 'guide', signs: true }) },
+    { kind: 'check', head: 'Quick check', text: 'Under the fasting card amber words say "still fasting? tap timer to fix". What does amber mean in this app?', answers: ['Something is out of date or needs a look', 'The habit is done', 'A new version is ready'], right: 0, ok: 'Right. The same amber shows when iCloud is not in step.' }
+  ] }
+];
+
+/* ---------- Tour engine (reusable) ---------- */
+let ci = 0, si = 0, solved = false, targetOff = false;
+const store = { get(k) { try { return localStorage.getItem(k) } catch { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch {} } };
+let doneChapters = new Set(JSON.parse(store.get('trackingtour-done') || '[]'));
+
+function emit(name, data) {
+  const st = LESSONS[ci]?.steps[si]; if (!st || solved || st.kind !== 'try') return;
+  if (st.on && st.on[name]) { markTarget(st.on[name]); }
+  if ((st.wait === name || st.alt === name) && (!st.when || st.when(data))) succeed(st.ok);
+}
+function succeed(msg) {
+  solved = true; targetOff = true; const fb = document.getElementById('fb'); if (fb) { fb.textContent = '\u2713 ' + msg; fb.className = 'feedback'; }
+  const nx = document.getElementById('next'); if (nx) { nx.disabled = false; nx.focus({ preventScroll: true }); }
+  markTarget();
+}
+let curTarget = null;
+function markTarget(t) {
+  if (t !== undefined) curTarget = t;
+  document.querySelectorAll('.target').forEach(e => e.classList.remove('target'));
+  if (!curTarget || targetOff) return;
+  const q = n => document.querySelector(`#stage [data-t="${CSS.escape(n)}"]`);
+  // If the thing to tap is out of sight (a stray tap closed a page), point at the way back to it.
+  const first = LESSONS[ci] && LESSONS[ci].steps[si] && LESSONS[ci].steps[si].target;
+  const el = q(curTarget) || (first && first !== curTarget ? q(first) : null)
+    || (S.alert ? q('alert-cancel') : S.sheet === 'settings' && S.spage ? q('page-back') : S.sheet ? q('sheet-cancel') : S.stack.length ? q('page-back') : null);
+  if (el) {
+    el.classList.add('target');
+    const sc = el.closest('.tk-scr');
+    if (sc) { const r = el.getBoundingClientRect(), s = sc.getBoundingClientRect(), k = document.getElementById('stagebox').clientWidth / 390;
+      if (r.top < s.top + 40 * k || r.bottom > s.bottom - 110 * k) sc.scrollTop += (r.top - s.top - 120 * k) / k; }
+  }
+}
+function renderRail() {
+  const total = LESSONS.reduce((n, l) => n + l.steps.length, 0);
+  const before = LESSONS.slice(0, ci).reduce((n, l) => n + l.steps.length, 0) + si;
+  document.getElementById('rail').innerHTML = `<div class="brand"><span class="logo">${icon('grid')}</span><div><h1>Tracking Tour</h1><small>Written for AMS Tracking 2.0</small></div></div>
+    ${LESSONS.map((l, i) => `<button class="chap ${i === ci ? 'cur' : ''} ${doneChapters.has(i) ? 'done' : ''}" data-ch="${i}">${icon(l.icon)}<span>${l.title}</span><span class="n">${doneChapters.has(i) ? '\u2713' : l.steps.length + ' steps'}</span></button>`).join('')}
+    <button class="chap ${ci === LESSONS.length ? 'cur' : ''}" data-ch="${LESSONS.length}">${icon('phone')}<span>Now on your iPhone</span></button>
+    <div class="bar"><i style="width:${Math.round(100 * Math.min(before, total) / total)}%"></i></div>
+    <p class="railnote">Practice copy, nothing changes in your real app. Based on AMS Tracking 2.0 (build 24).</p>`;
+}
+document.getElementById('rail').addEventListener('click', e => { const b = e.target.closest('[data-ch]'); if (b) goChapter(+b.dataset.ch); });
+
+function goChapter(i) {
+  ci = i; si = 0; clearTimers(); S = START();
+  const L = LESSONS[i]; if (L && L.setup) L.setup();
+  renderStep();
+}
+function renderStep() {
+  renderRail();
+  const coach = document.getElementById('coach'), fin = document.getElementById('finish');
+  if (ci >= LESSONS.length) { renderFinish(); coach.hidden = true; return; }
+  coach.hidden = false; fin.hidden = true;
+  const L = LESSONS[ci], st = L.steps[si];
+  solved = st.kind === 'look'; targetOff = false;
+  clearTimers(); clearTimeout(toastH);
+  if (st.setup) st.setup();
+  S.toast = null;
+  const kindName = { look: 'Look', try: 'Try it', check: 'Check' }[st.kind];
+  coach.innerHTML = `<div class="eyebrow">${icon(L.icon)} ${esc(L.title)} <span class="kind">\u00B7 ${kindName} \u00B7 step ${si + 1} of ${L.steps.length}</span></div>
+    <div><h2>${esc(st.head)}</h2><p>${esc(st.text)}</p>${st.hint ? `<p style="color:var(--muted);font-size:13px">${esc(st.hint)}</p>` : ''}</div>
+    <div class="btns">${ci + si > 0 ? '<button class="btn ghost" id="back">Back</button>' : ''}<button class="btn main-b" id="next" ${solved ? '' : 'disabled'}>${si === L.steps.length - 1 ? 'Finish chapter' : 'Next'}</button></div>
+    ${st.kind === 'check' ? `<div class="answers">${st.answers.map((a, i) => `<button class="ans" data-a="${i}">${esc(a)}</button>`).join('')}</div>` : ''}
+    <p class="feedback" id="fb"></p>`;
+  curTarget = st.target || null;
+  renderStage();
+  if (st.kind === 'check') coach.querySelectorAll('.ans').forEach(b => b.onclick = () => {
+    const fb = document.getElementById('fb');
+    if (+b.dataset.a === st.right) { coach.querySelectorAll('.ans').forEach(x => x.disabled = true); b.classList.add('right'); succeed(st.ok); }
+    else { b.classList.add('wrong'); fb.textContent = 'Not quite. Try another answer.'; fb.className = 'feedback no'; }
+  });
+  document.getElementById('next').onclick = next;
+  const bk = document.getElementById('back'); if (bk) bk.onclick = back;
+}
+function next() {
+  const L = LESSONS[ci];
+  if (si < L.steps.length - 1) { si++; renderStep(); return; }
+  doneChapters.add(ci); store.set('trackingtour-done', JSON.stringify([...doneChapters]));
+  goChapter(ci + 1);
+}
+function back() { if (si > 0) { si--; renderStep(); } else if (ci > 0) { goChapter(ci - 1); } }
+
+function renderFinish() {
+  const fin = document.getElementById('finish'); fin.hidden = false;
+  clearTimers(); S = START(); curTarget = null; renderStage();
+  const items = ['Open Tracking on your iPhone. Today has no header. Tap the big circle of a habit, then tap it again to undo. Swipe a card right (done) and left (skip), and read the bar that appears.',
+    'Press and hold the big circle of a habit you forgot yesterday. Read the bar: "Yesterday marked done". Then tap a part\u2019s word on a habit with parts, such as Walk | Read | Write.',
+    'On the fasting card tap the round button and look at the ring. Tap the running time and look at Started, then press Cancel. Tap the middle of the card and find "Fasting stages".',
+    'Open a habit\u2019s page. Tap a missed day to cycle it, tap Note, and look at "Skip several days (vacation)\u2026" (press Cancel).',
+    'Tap Add, give it a name, choose Weekly target and press Save. Then open Stats and "Last week\u2019s analysis".',
+    'Press and hold the Tracking icon on the Home Screen and look for Start Fasting or Stop Fasting. Say "Hey Siri, start fasting in Tracking". In Settings switch on the Daily reminder.',
+    'In Settings check that State says "Up to date" under iCloud, open Safety copies, then open How it works and Signs in this app.'];
+  let ticks = JSON.parse(store.get('trackingtour-real') || '[]');
+  fin.innerHTML = `<h3>Now on your iPhone</h3><p style="margin:0 0 8px;color:var(--muted)">Everything here is a practice copy. Nothing changes on your iPhone, iPad or Mac. Now try the same things in the real app.</p>${items.map((t, i) => `<label><input type="checkbox" id="real-${i}" ${ticks.includes(i) ? 'checked' : ''}><span>${esc(t)}</span></label>`).join('')}
+    <div style="display:flex;gap:8px;margin-top:12px"><button class="btn main-b" id="again">Start the tour again</button></div>`;
+  fin.querySelectorAll('input').forEach((c, i) => c.onchange = () => { ticks = ticks.filter(x => x !== i); if (c.checked) ticks.push(i); store.set('trackingtour-real', JSON.stringify(ticks)); });
+  document.getElementById('again').onclick = () => goChapter(0);
+}
+
+/* Fit the 390 x 760 pretend iPhone into its box */
+function fit() { const box = document.getElementById('stagebox'); document.getElementById('stage').style.transform = `scale(${box.clientWidth / 390})`; }
+new ResizeObserver(fit).observe(document.getElementById('stagebox'));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (S.alert) { S.alert = null; renderStage(); return; }
+    if (S.sheet) { S.sheet = S.sheet === 'picker' ? 'settings' : null; if (S.sheet !== 'settings') S.spage = null; renderStage(); return; }
+  }
+  if (e.key === 'Enter' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') { const n = document.getElementById('next'); if (n && !n.disabled && document.activeElement !== n) n.click(); }
+});
+goChapter(0); fit();
+</script>
